@@ -9,7 +9,7 @@ import { CriteriaCardComponent } from './CriteriaCard';
 import { GameHeader } from './GameHeader';
 import { TestHistory } from './TestHistory';
 import { SteamBackground } from './SteamBackground';
-import { Gear, Zap, Settings } from 'lucide-react';
+import { Cog, Zap, Settings } from 'lucide-react';
 
 export const TuringMachine: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(() => initializeGame());
@@ -88,13 +88,13 @@ export const TuringMachine: React.FC = () => {
       
       {/* Decorative gears */}
       <div className="absolute top-4 left-4 text-steampunk-bronze animate-gear-rotate">
-        <Gear size={32} />
+        <Cog size={32} />
       </div>
       <div className="absolute top-4 right-4 text-steampunk-copper animate-gear-rotate" style={{ animationDirection: 'reverse', animationDuration: '15s' }}>
-        <Gear size={28} />
+        <Cog size={28} />
       </div>
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-steampunk-brass animate-gear-rotate" style={{ animationDuration: '25s' }}>
-        <Gear size={24} />
+        <Cog size={24} />
       </div>
 
       <div className="container mx-auto px-4 py-6 relative z-10">

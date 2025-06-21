@@ -1,5 +1,5 @@
 
-import { GameState, Combination, CriteriaCard, Digit, TestSchema } from './gameTypes';
+import { GameState, Combination, CriteriaCard, Digit, TestSchema, TestResult } from './gameTypes';
 import { generateCriteriaCards, validateCriteria } from './criteriaLogic';
 
 export function initializeGame(): GameState {
@@ -39,7 +39,7 @@ export function performTest(gameState: GameState, testSchema: TestSchema): GameS
   }
 
   const isSuccess = validateCriteria(testSchema.combination, card);
-  const result = isSuccess ? 'success' : 'failure';
+  const result: TestResult = isSuccess ? 'success' : 'failure';
 
   const updatedCards = gameState.criteriaCards.map(c => 
     c.id === testSchema.cardId ? { ...c, testResult: result } : c
@@ -93,7 +93,7 @@ export function nextRound(gameState: GameState): GameState {
   // Reset test results for the new round
   const resetCards = gameState.criteriaCards.map(card => ({
     ...card,
-    testResult: null
+    testResult: null as TestResult
   }));
 
   return {
