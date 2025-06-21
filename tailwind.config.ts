@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,18 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				steampunk: {
+					bronze: '#CD7F32',
+					copper: '#B87333',
+					brass: '#B5A642',
+					gold: '#FFD700',
+					darkBronze: '#8B4513',
+					saphir: '#0047AB',
+					topaze: '#FFC87C',
+					amethyst: '#9966CC',
+					steam: '#F5F5DC',
+					coal: '#2F2F2F'
 				}
 			},
 			borderRadius: {
@@ -84,11 +97,50 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'gear-rotate': {
+					from: { transform: 'rotate(0deg)' },
+					to: { transform: 'rotate(360deg)' }
+				},
+				'steam-rise': {
+					'0%': { 
+						transform: 'translateY(0) scale(1)',
+						opacity: '0.7'
+					},
+					'100%': { 
+						transform: 'translateY(-50px) scale(1.5)',
+						opacity: '0'
+					}
+				},
+				'nixie-glow': {
+					'0%, 100%': { 
+						boxShadow: '0 0 5px currentColor',
+						transform: 'scale(1)'
+					},
+					'50%': { 
+						boxShadow: '0 0 20px currentColor',
+						transform: 'scale(1.05)'
+					}
+				},
+				'lever-pull': {
+					'0%': { transform: 'rotate(0deg)' },
+					'50%': { transform: 'rotate(-30deg)' },
+					'100%': { transform: 'rotate(0deg)' }
+				},
+				'button-press': {
+					'0%': { transform: 'translateY(0) scale(1)' },
+					'50%': { transform: 'translateY(2px) scale(0.95)' },
+					'100%': { transform: 'translateY(0) scale(1)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'gear-rotate': 'gear-rotate 20s linear infinite',
+				'steam-rise': 'steam-rise 3s ease-out infinite',
+				'nixie-glow': 'nixie-glow 2s ease-in-out infinite',
+				'lever-pull': 'lever-pull 0.8s ease-in-out',
+				'button-press': 'button-press 0.2s ease-in-out'
 			}
 		}
 	},
