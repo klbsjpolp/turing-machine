@@ -27,6 +27,7 @@ export interface GameState {
   maxRounds: number;
   maxTestsPerRound: number;
   currentTest: Combination;
+  combinationLocked: boolean; // Whether the current combination is locked (can't be changed)
   gameStatus: 'playing' | 'won' | 'lost' | 'abandoned';
   testHistory: Array<{
     round: number;

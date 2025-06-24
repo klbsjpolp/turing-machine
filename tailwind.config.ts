@@ -1,22 +1,23 @@
 
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 export default {
-	darkMode: ["class"],
-	content: [
-		"./pages/**/*.{ts,tsx}",
-		"./components/**/*.{ts,tsx}",
-		"./app/**/*.{ts,tsx}",
-		"./src/**/*.{ts,tsx}",
-	],
-	prefix: "",
-	theme: {
-		container: {
-			center: true,
-			padding: '2rem',
-			screens: {
-				'2xl': '1400px'
-			}
+  darkMode: ["class", "dark"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+  ],
+  theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px',
+      },
 		},
 		extend: {
 			colors: {
@@ -64,16 +65,16 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				steampunk: {
-					bronze: '#CD7F32',
-					copper: '#B87333',
-					brass: '#B5A642',
-					gold: '#FFD700',
-					darkBronze: '#8B4513',
-					saphir: '#0047AB',
-					topaze: '#FFC87C',
-					amethyst: '#9966CC',
-					steam: '#F5F5DC',
-					coal: '#2F2F2F'
+					bronze: '#6b5a4c',
+					copper: '#a16640',
+					brass: '#bfa66b',
+					gold: '#d9c06c',
+					darkBronze: '#504339',
+					saphir: '#3366cc',
+					topaze: '#d4a017',
+					amethyst: '#a666cc',
+					steam: '#e9e8e2',
+					coal: '#26282c'
 				}
 			},
 			borderRadius: {
@@ -140,9 +141,10 @@ export default {
 				'steam-rise': 'steam-rise 3s ease-out infinite',
 				'nixie-glow': 'nixie-glow 2s ease-in-out infinite',
 				'lever-pull': 'lever-pull 0.8s ease-in-out',
-				'button-press': 'button-press 0.2s ease-in-out'
-			}
-		}
-	},
-	plugins: [require("tailwindcss-animate")],
+				'button-press': 'button-press 0.2s ease-in-out'      },
+    },
+  },
+  plugins: [
+    animate,
+  ],
 } satisfies Config;

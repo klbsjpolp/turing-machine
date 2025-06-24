@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { GameState } from '@/lib/gameTypes';
 import { Clock, Zap, Wrench } from 'lucide-react';
+import { SequenceDisplay } from './SequenceDisplay';
 
 interface GameHeaderProps {
   gameState: GameState;
@@ -18,42 +18,46 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ gameState }) => {
         Déchiffrez la Combinaison Maîtresse de cette Merveille Mécanique
       </p>
 
-      <div className="flex justify-center gap-6 flex-wrap">
-        <Card className="p-4 bg-gradient-to-r from-steampunk-bronze to-steampunk-copper border-steampunk-brass border-2 shadow-lg">
-          <div className="flex items-center gap-2 text-steampunk-steam">
-            <Clock size={24} className="text-steampunk-gold" />
+      <div className="flex justify-center gap-4 flex-wrap">
+        <div className="paper-panel p-3">
+          <div className="flex items-center gap-3">
+            <Clock size={28} className="text-amber-900/70" />
             <div>
-              <div className="text-sm opacity-75">Manche</div>
-              <div className="text-2xl font-bold animate-nixie-glow">
+              <div className="text-sm opacity-75 font-semibold">Manche</div>
+              <div className="text-2xl font-bold">
                 {gameState.currentRound} / {gameState.maxRounds}
               </div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-4 bg-gradient-to-r from-steampunk-bronze to-steampunk-copper border-steampunk-brass border-2 shadow-lg">
-          <div className="flex items-center gap-2 text-steampunk-steam">
-            <Zap size={24} className="text-steampunk-gold" />
+        <div className="paper-panel p-3">
+          <div className="flex items-center gap-3">
+            <Zap size={28} className="text-amber-900/70" />
             <div>
-              <div className="text-sm opacity-75">Analyses</div>
-              <div className="text-2xl font-bold animate-nixie-glow">
+              <div className="text-sm opacity-75 font-semibold">Analyses</div>
+              <div className="text-2xl font-bold">
                 {gameState.testsThisRound} / {gameState.maxTestsPerRound}
               </div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-4 bg-gradient-to-r from-steampunk-bronze to-steampunk-copper border-steampunk-brass border-2 shadow-lg">
-          <div className="flex items-center gap-2 text-steampunk-steam">
-            <Wrench size={24} className="text-steampunk-gold" />
+        <div className="paper-panel p-3">
+          <div className="flex items-center gap-3">
+            <Wrench size={28} className="text-amber-900/70" />
             <div>
-              <div className="text-sm opacity-75">Schéma Actuel</div>
-              <div className="text-xl font-bold animate-nixie-glow">
-                {gameState.currentTest.saphir}-{gameState.currentTest.topaze}-{gameState.currentTest.amethyst}
+              <div className="text-sm opacity-75 font-semibold">Schéma Actuel</div>
+              <div className="text-xl">
+                <SequenceDisplay 
+                  saphir={gameState.currentTest.saphir}
+                  topaze={gameState.currentTest.topaze}
+                  amethyst={gameState.currentTest.amethyst}
+                />
               </div>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

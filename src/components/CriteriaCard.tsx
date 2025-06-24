@@ -1,91 +1,74 @@
-
 import React from 'react';
-import { Card } from '@/components/ui/card';
 import { CriteriaCard } from '@/lib/gameTypes';
-import { CheckCircle, XCircle, Circle } from 'lucide-react';
+import { CheckCircle, XCircle, Circle, GitCommitHorizontal } from 'lucide-react';
+import { formatRuleWithColors } from '@/lib/formatRules';
 
 interface CriteriaCardComponentProps {
   card: CriteriaCard;
-  isSelected: boolean;
-  onSelect: () => void;
+  isAnalyzing: boolean;
+  onAnalyze: () => void;
 }
 
 export const CriteriaCardComponent: React.FC<CriteriaCardComponentProps> = ({
   card,
-  isSelected,
-  onSelect
+  isAnalyzing,
+  onAnalyze,
 }) => {
   const getResultIcon = () => {
     if (card.testResult === 'success') {
-      return <CheckCircle className="text-green-400 animate-nixie-glow" size={24} />;
+      return <CheckCircle className="text-green-800" size={24} />;
     } else if (card.testResult === 'failure') {
-      return <XCircle className="text-red-400 animate-nixie-glow" size={24} />;
+      return <XCircle className="text-red-800" size={24} />;
+    } else {
+      return <Circle className="text-amber-900 opacity-50" size={24} />;
     }
-    return <Circle className="text-steampunk-steam opacity-30" size={24} />;
   };
 
-  const getCategoryColor = () => {
-    switch (card.category) {
-      case 'single':
-        return 'from-steampunk-saphir to-blue-600';
-      case 'comparison':
-        return 'from-steampunk-topaze to-yellow-600';
-      case 'global':
-        return 'from-steampunk-amethyst to-purple-600';
-      case 'composite':
-        return 'from-steampunk-brass to-steampunk-gold';
-      default:
-        return 'from-steampunk-copper to-steampunk-bronze';
-    }
-  };
+  const hasBeenUsed = card.testResult !== null;
 
   return (
-    <Card
-      onClick={onSelect}
-      className={`
-        p-4 cursor-pointer transition-all duration-300 transform
-        ${isSelected 
-          ? 'border-steampunk-gold border-2 shadow-2xl scale-105 animate-nixie-glow' 
-          : 'border-steampunk-copper border hover:border-steampunk-brass hover:scale-102'
-        }
-        bg-gradient-to-br ${getCategoryColor()} bg-opacity-90 backdrop-blur-sm
-        hover:shadow-xl
-      `}
+    <div
+      onClick={onAnalyze}
+      className={`punch-card ${isAnalyzing ? 'analyzing' : ''} ${hasBeenUsed ? 'used' : ''}`}
     >
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-bold text-steampunk-steam truncate">
-          {card.name}
+      <div className="punch-card-header">
+        <h3 className="font-bold truncate">
+          {formatRuleWithColors(card.name)}
         </h3>
-        <div className="flex-shrink-0 ml-2">
+        <div className="punch-card-result">
           {getResultIcon()}
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="p-2 bg-black bg-opacity-20 rounded border border-steampunk-steam border-opacity-30">
-          <div className="text-sm text-steampunk-steam font-medium">
-            A: {card.ruleA}
-          </div>
+      <div className="punch-card-body">
+        <div className="punch-row">
+          <span>A:</span>
+          <p className="inline">
+            {formatRuleWithColors(card.ruleA)}
+          </p>
         </div>
         
-        <div className="text-center text-steampunk-steam opacity-60 text-xs">
-          OU
+        <div className="punch-divider">
+          <GitCommitHorizontal size={16} className="opacity-50" />
+          <span>OU</span>
+          <GitCommitHorizontal size={16} className="opacity-50" />
         </div>
         
-        <div className="p-2 bg-black bg-opacity-20 rounded border border-steampunk-steam border-opacity-30">
-          <div className="text-sm text-steampunk-steam font-medium">
-            B: {card.ruleB}
-          </div>
+        <div className="punch-row">
+          <span>B:</span>
+          <p className="inline">
+            {formatRuleWithColors(card.ruleB)}
+          </p>
         </div>
       </div>
 
-      {isSelected && (
-        <div className="mt-3 text-center">
-          <div className="text-xs text-steampunk-gold font-bold animate-pulse">
-            ⚡ CARTE SÉLECTIONNÉE ⚡
-          </div>
-        </div>
-      )}
-    </Card>
+      <div className="punch-card-footer">
+        <div className="hole"></div>
+        <div className="hole"></div>
+        <div className="hole"></div>
+        <div className="hole"></div>
+        <div className="hole"></div>
+      </div>
+    </div>
   );
 };

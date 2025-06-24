@@ -1,24 +1,18 @@
-
 import { GameState, Combination, CriteriaCard, Digit, TestSchema, TestResult } from './gameTypes';
-import { generateCriteriaCards, validateCriteria } from './criteriaLogic';
+import { generateUniqueSolutionSet, validateCriteria } from './criteriaLogic';
 
 export function initializeGame(): GameState {
-  const masterCombination: Combination = {
-    saphir: (Math.floor(Math.random() * 5) + 1) as Digit,
-    topaze: (Math.floor(Math.random() * 5) + 1) as Digit,
-    amethyst: (Math.floor(Math.random() * 5) + 1) as Digit
-  };
-
-  const criteriaCards = generateCriteriaCards();
+  const { cards, solution } = generateUniqueSolutionSet();
 
   return {
-    masterCombination,
-    criteriaCards,
+    masterCombination: solution,
+    criteriaCards: cards,
     currentRound: 1,
     testsThisRound: 0,
     maxRounds: 7,
     maxTestsPerRound: 3,
     currentTest: { saphir: 1, topaze: 1, amethyst: 1 },
+    combinationLocked: false, // Start with the combination unlocked
     gameStatus: 'playing',
     testHistory: []
   };
@@ -56,8 +50,14 @@ export function performTest(gameState: GameState, testSchema: TestSchema): GameS
     ...gameState,
     criteriaCards: updatedCards,
     testsThisRound: gameState.testsThisRound + 1,
+    combinationLocked: true, // Lock the combination after a test
     testHistory: newHistory
   };
+}
+
+export function checkSolution(gameState: GameState, solution: Combination): boolean {
+  // A solution is valid if it passes all criteria cards.
+  return gameState.criteriaCards.every(card => validateCriteria(solution, card));
 }
 
 export function submitSolution(gameState: GameState, solution: Combination): GameState {
@@ -65,15 +65,15 @@ export function submitSolution(gameState: GameState, solution: Combination): Gam
     return gameState;
   }
 
-  const isCorrect = 
-    solution.saphir === gameState.masterCombination.saphir &&
-    solution.topaze === gameState.masterCombination.topaze &&
-    solution.amethyst === gameState.masterCombination.amethyst;
+  if (checkSolution(gameState, solution)) {
+    return {
+      ...gameState,
+      gameStatus: 'won',
+    };
+  }
 
-  return {
-    ...gameState,
-    gameStatus: isCorrect ? 'won' : (gameState.currentRound >= gameState.maxRounds ? 'lost' : 'playing')
-  };
+  // Incorrect solution: penalize by advancing to the next round.
+  return nextRound(gameState);
 }
 
 export function nextRound(gameState: GameState): GameState {
@@ -90,17 +90,18 @@ export function nextRound(gameState: GameState): GameState {
     };
   }
 
-  // Reset test results for the new round
+  // Reset all card test results for the new round
   const resetCards = gameState.criteriaCards.map(card => ({
     ...card,
-    testResult: null as TestResult
+    testResult: null
   }));
 
   return {
     ...gameState,
     currentRound: newRound,
     testsThisRound: 0,
-    criteriaCards: resetCards
+    combinationLocked: false, // Unlock the combination for the new round
+    criteriaCards: resetCards, // Reset all card test results
   };
 }
 
