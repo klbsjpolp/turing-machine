@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Color, Digit } from '@/lib/gameTypes';
 
 // Mechanical sound effect
@@ -21,27 +21,6 @@ export const ColorPanel: React.FC<ColorPanelProps> = ({
   onDigitSelect,
   disabled
 }) => {
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  const triggerAnimation = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setIsAnimating(false);
-    }, 300); // Duration of panel-shake animation
-  };
-
-  const handleUp = () => {
-    const newDigit = (selectedDigit === 5 ? 1 : selectedDigit + 1) as Digit;
-    onDigitSelect(color, newDigit);
-    triggerAnimation();
-  };
-
-  const handleDown = () => {
-    const newDigit = (selectedDigit === 1 ? 5 : selectedDigit - 1) as Digit;
-    onDigitSelect(color, newDigit);
-    triggerAnimation();
-  };
-
   const colorConfig = {
     saphir: {
       name: 'Saphir',
@@ -80,7 +59,7 @@ export const ColorPanel: React.FC<ColorPanelProps> = ({
   };
 
   return (
-    <div className={`p-4 rounded-lg border-2 ${config.borderColor} ${config.bgColor} bg-opacity-20 backdrop-blur-sm ${isAnimating ? 'animate-panel-shake' : ''}`}>
+    <div className={`p-4 rounded-lg border-2 ${config.borderColor} ${config.bgColor} bg-opacity-20 backdrop-blur-sm`}>
       <h3 className={`text-lg font-bold ${config.textColor} mb-3 text-center`}>
         {config.name}
       </h3>

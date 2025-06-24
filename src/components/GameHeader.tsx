@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
 import { GameState } from '@/lib/gameTypes';
 import { Clock, Zap, Wrench } from 'lucide-react';
 import { SequenceDisplay } from './SequenceDisplay';

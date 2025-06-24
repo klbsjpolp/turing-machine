@@ -1,4 +1,4 @@
-import { GameState, Combination, CriteriaCard, Digit, TestSchema, TestResult } from './gameTypes';
+import { GameState, Combination, TestSchema, TestResult } from './gameTypes';
 import { generateUniqueSolutionSet, validateCriteria } from './criteriaLogic';
 
 export function initializeGame(): GameState {

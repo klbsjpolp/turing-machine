@@ -13,12 +13,6 @@ const getColorClass = (color: string) => {
   }
 };
 
-type ColoredTextProps = {
-  text: string;
-  color: 'saphir' | 'topaze' | 'amethyste';
-  key: number;
-};
-
 export const formatRuleWithColors = (rule: string): React.ReactNode[] => {
   // Return empty array for empty or undefined rules
   if (!rule) return [];

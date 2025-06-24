@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { GameState, Combination, Digit, Color } from '@/lib/gameTypes';
+import { GameState, Digit, Color } from '@/lib/gameTypes';
 import { initializeGame, performTest, nextRound, submitSolution, abandonGame, checkSolution } from '@/lib/gameLogic';
 import { ColorPanel } from './ColorPanel';
 import { CriteriaCardComponent } from './CriteriaCard';
@@ -9,13 +8,11 @@ import { GameHeader } from './GameHeader';
 import { TestHistory } from './TestHistory';
 import { SteamBackground } from './SteamBackground';
 import { LightingOverlay, LightingEffect } from './LightingOverlay';
-import { Cog, Zap, Settings } from 'lucide-react';
+import { Cog, Settings } from 'lucide-react';
 
 export const TuringMachine: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(() => initializeGame());
-  const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [analyzingCardId, setAnalyzingCardId] = useState<string | null>(null);
-  const [leverAnimating, setLeverAnimating] = useState(false);
   const [solutionMode, setSolutionMode] = useState(false);
   const [lightingEffect, setLightingEffect] = useState<LightingEffect>('default');
 
@@ -46,7 +43,6 @@ export const TuringMachine: React.FC = () => {
       return;
     }
 
-    setSelectedCard(cardId);
     setAnalyzingCardId(cardId);
     console.log(`🔧 PUNCH! Inserting card ${cardId} for analysis...`);
 
@@ -90,7 +86,6 @@ export const TuringMachine: React.FC = () => {
   const handleNewGame = () => {
     console.log(' STEAM HISS! New puzzle generating...');
     setGameState(initializeGame());
-    setSelectedCard(null);
     setAnalyzingCardId(null);
     setSolutionMode(false);
     setLightingEffect('default');
@@ -110,7 +105,6 @@ export const TuringMachine: React.FC = () => {
     }
   }, [gameState.gameStatus]);
 
-  const canTest = selectedCard && gameState.testsThisRound < gameState.maxTestsPerRound && gameState.gameStatus === 'playing';
   const canNextRound = gameState.testsThisRound > 0 && gameState.gameStatus === 'playing';
 
   return (
