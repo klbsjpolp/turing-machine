@@ -108,7 +108,7 @@ export const TuringMachine: React.FC = () => {
   const canNextRound = gameState.testsThisRound > 0 && gameState.gameStatus === 'playing';
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-steampunk-coal to-steampunk-darkBronze relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-b from-steampunk-coal to-steampunk-dark-bronze relative overflow-hidden">
       <SteamBackground />
       <LightingOverlay effect={lightingEffect} />
       
@@ -326,7 +326,7 @@ export const TuringMachine: React.FC = () => {
 
           {/* Solution Mode Modal */}
           {solutionMode && (
-            <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
               <div className="paper-panel max-w-md mx-4">
                 <h2 className="paper-panel-title">
                   Proposer la combinaison

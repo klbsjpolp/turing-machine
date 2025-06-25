@@ -10,7 +10,7 @@ interface GameHeaderProps {
 export const GameHeader: React.FC<GameHeaderProps> = ({ gameState }) => {
   return (
     <div className="text-center mb-8">
-      <h1 className="text-5xl font-bold text-steampunk-gold mb-4 animate-nixie-glow">
+      <h1 className="text-5xl font-bold text-steampunk-gold mb-4">
         ⚙️ AUTOMATE DE DÉDUCTION ⚙️
       </h1>
       <p className="text-xl text-steampunk-steam mb-6 opacity-90">

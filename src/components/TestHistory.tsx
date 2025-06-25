@@ -78,7 +78,7 @@ export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards
       </ScrollArea>
 
       {history.length > 0 && (
-        <div className="mt-4 p-3 bg-gradient-to-r from-steampunk-brass to-steampunk-gold bg-opacity-20 rounded border border-steampunk-gold border-opacity-50">
+        <div className="mt-4 p-3 bg-linear-to-r from-steampunk-brass/20 to-steampunk-gold/20 rounded border border-steampunk-gold/50">
           <div className="text-steampunk-steam text-sm text-center">
             <span className="font-bold">{history.length}</span> analyse{history.length > 1 ? 's' : ''} effectuée{history.length > 1 ? 's' : ''}
           </div>

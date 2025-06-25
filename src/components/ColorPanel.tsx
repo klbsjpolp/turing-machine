@@ -24,19 +24,19 @@ export const ColorPanel: React.FC<ColorPanelProps> = ({
   const colorConfig = {
     saphir: {
       name: 'Saphir',
-      bgColor: 'bg-steampunk-saphir',
+      bgColor: 'bg-steampunk-saphir/20',
       borderColor: 'border-blue-400',
       textColor: 'text-amber-900/80'
     },
     topaze: {
       name: 'Topaze',
-      bgColor: 'bg-steampunk-topaze',
+      bgColor: 'bg-steampunk-topaze/20',
       borderColor: 'border-yellow-400',
       textColor: 'text-amber-900/80'
     },
     amethyst: {
       name: 'Améthyste',
-      bgColor: 'bg-steampunk-amethyst',
+      bgColor: 'bg-steampunk-amethyst/20',
       borderColor: 'border-purple-400',
       textColor: 'text-amber-900/80'
     }
@@ -59,7 +59,7 @@ export const ColorPanel: React.FC<ColorPanelProps> = ({
   };
 
   return (
-    <div className={`p-4 rounded-lg border-2 ${config.borderColor} ${config.bgColor} bg-opacity-20 backdrop-blur-sm`}>
+    <div className={`p-4 rounded-lg border-2 ${config.borderColor} ${config.bgColor} backdrop-blur-xs`}>
       <h3 className={`text-lg font-bold ${config.textColor} mb-3 text-center`}>
         {config.name}
       </h3>

@@ -18,8 +18,8 @@ export const SteamBackground: React.FC = () => {
       ))}
       
       {/* Gradient overlays for depth */}
-      <div className="absolute inset-0 bg-gradient-to-t from-steampunk-coal via-transparent to-steampunk-darkBronze opacity-50" />
-      <div className="absolute inset-0 bg-gradient-to-r from-steampunk-darkBronze via-transparent to-steampunk-darkBronze opacity-30" />
+      <div className="absolute inset-0 bg-linear-to-t from-steampunk-coal via-transparent to-steampunk-dark-bronze opacity-50" />
+      <div className="absolute inset-0 bg-linear-to-r from-steampunk-dark-bronze via-transparent to-steampunk-dark-bronze opacity-30" />
       
       {/* Subtle texture overlay */}
       <div 

@@ -1,8 +1,157 @@
-@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel+Decorative:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel+Decorative:wght@400;700;900&display=swap')
+layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@plugin 'tailwindcss-animate';
+
+@custom-variant dark (&:is(dark *));
+
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --color-steampunk-bronze: #6b5a4c;
+  --color-steampunk-copper: #a16640;
+  --color-steampunk-brass: #bfa66b;
+  --color-steampunk-gold: #d9c06c;
+  --color-steampunk-dark-bronze: #504339;
+  --color-steampunk-saphir: #3366cc;
+  --color-steampunk-topaze: #d4a017;
+  --color-steampunk-amethyst: #a666cc;
+  --color-steampunk-steam: #e9e8e2;
+  --color-steampunk-coal: #26282c;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-gear-rotate: gear-rotate 20s linear infinite;
+  --animate-steam-rise: steam-rise 3s ease-out infinite;
+  --animate-lever-pull: lever-pull 0.8s ease-in-out;
+  --animate-button-press: button-press 0.2s ease-in-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes gear-rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes steam-rise {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 0.7;
+    }
+    100% {
+      transform: translateY(-50px) scale(1.5);
+      opacity: 0;
+    }
+  }
+  @keyframes lever-pull {
+    0% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(-30deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+  @keyframes button-press {
+    0% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(2px) scale(0.95);
+    }
+    100% {
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 @layer base {
   :root {
@@ -116,74 +265,67 @@
 
   /* Digit Selector with Rails */
   .digit-selector {
-    @apply relative w-10 h-20 mx-1 p-0 bg-transparent border-none cursor-pointer 
-           flex flex-col items-center justify-start outline-none;
-  }
+    @apply relative w-10 h-20 mx-1 p-0 bg-transparent border-none cursor-pointer
+    flex flex-col items-center justify-start outline-hidden;
 
-  .digit-selector .digit-value {
-    @apply w-10 h-10 flex items-center justify-center text-2xl font-mono font-bold 
-           text-amber-900 bg-amber-900/10 rounded-full transition-all duration-300 
-           ease-in-out relative z-10 border-2 border-amber-900/30 translate-y-0;
-  }
+    .digit-value {
+      @apply w-10 h-10 flex items-center justify-center text-2xl font-mono font-bold
+      text-amber-900 bg-amber-900/10 rounded-full transition-all duration-300
+      ease-in-out relative z-10 border-2 border-amber-900/30 translate-y-0;
+    }
 
-  .digit-selector .digit-rail {
-    @apply absolute top-0 left-1/2 -translate-x-1/2 w-1 h-full 
-           bg-amber-900/10 rounded overflow-hidden z-0;
-  }
+    .digit-rail {
+      @apply absolute top-0 left-1/2 -translate-x-1/2 w-1 h-1/2
+      bg-amber-900/40 rounded z-0;
+    }
 
+    &.selected {
+      .digit-value {
+        @apply text-amber-50 bg-amber-900 shadow-[0_0_10px_rgba(180,83,9,0.5)]
+        border-amber-50/50 translate-y-0;
+      }
 
-  .digit-selector .digit-rail::after {
-    @apply content-[''] absolute top-0 left-0 right-0 h-full 
-           bg-amber-900/40 -translate-y-full transition-transform 
-           duration-300 ease-in-out;
-  }
+      .digit-rail {
+        @apply translate-y-6;
+      }
+    }
 
-  .digit-selector.selected .digit-value {
-    @apply text-amber-50 bg-amber-900/80 shadow-[0_0_10px_rgba(180,83,9,0.5)] 
-           border-amber-50/50 translate-y-0;
-  }
+    &:not(.selected) {
+      .digit-value {
+        @apply translate-y-full opacity-80;
+      }
 
-  .digit-selector:not(.selected) .digit-value {
-    @apply translate-y-6 opacity-80;
-  }
+      .digit-rail {
+        @apply h-1/3 translate-y-1/2 rounded-b-none;
+      }
+    }
 
-  .digit-selector:not(.selected) .digit-rail::after {
-    @apply translate-y-0;
-  }
+    &.animating {
+      transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-  .digit-selector.selected .digit-rail::after {
-    @apply translate-y-0;
-  }
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
 
-  .digit-selector.animating {
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
+      .digit-value {
+        background: rgba(100, 100, 100, 0.1);
+        border-color: rgba(100, 100, 100, 0.2);
+        color: #6b7280;
+        box-shadow: none;
+      }
 
-  .digit-selector:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  .digit-selector:disabled .digit-value {
-    background: rgba(100, 100, 100, 0.1);
-    border-color: rgba(100, 100, 100, 0.2);
-    color: #6b7280;
-    box-shadow: none;
-  }
-
-  .digit-selector:disabled .digit-rail {
-    background: rgba(100, 100, 100, 0.05);
-  }
-
-  .digit-selector:disabled .digit-rail::after {
-    background: rgba(100, 100, 100, 0.15);
+      .digit-rail {
+        background: rgba(100, 100, 100, 0.15);
+      }
+    }
   }
 
   .control-button {
     @apply w-12 h-12 flex items-center justify-center rounded-md border-2 
-           bg-gradient-to-b from-steampunk-bronze to-steampunk-darkBronze 
-           transition-all duration-100 border-steampunk-darkBronze 
-           text-steampunk-steam shadow-[0_4px_0_0] shadow-steampunk-darkBronze;
+           bg-linear-to-b from-steampunk-bronze to-steampunk-dark-bronze 
+           transition-all duration-100 border-steampunk-dark-bronze 
+           text-steampunk-steam shadow-[0_4px_0_0] shadow-steampunk-dark-bronze;
   }
 
   .control-button:hover {
@@ -191,11 +333,11 @@
   }
 
   .control-button:active {
-    @apply shadow-[0_2px_0_0] shadow-steampunk-darkBronze translate-y-0.5;
+    @apply shadow-[0_2px_0_0] shadow-steampunk-dark-bronze translate-y-0.5;
   }
 
   .chimney {
-    @apply absolute w-12 h-20 bg-gradient-to-b from-steampunk-darkBronze to-steampunk-coal border-x-2 border-b-2 border-steampunk-bronze rounded-t-sm z-0;
+    @apply absolute w-12 h-20 bg-linear-to-b from-steampunk-dark-bronze to-steampunk-coal border-x-2 border-b-2 border-steampunk-bronze rounded-t-sm z-0;
     top: -80px;
     left: 20%;
   }
@@ -219,7 +361,7 @@
   }
 
   .decorative-pipe {
-    @apply absolute bg-gradient-to-r from-steampunk-copper to-steampunk-brass rounded-full shadow-md z-0;
+    @apply absolute bg-linear-to-r from-steampunk-copper to-steampunk-brass rounded-full shadow-md z-0;
   }
   .pipe-1 {
     @apply w-48 h-5 top-24 -left-16 -rotate-45;
@@ -337,11 +479,12 @@
     }
 
     &.used .hole {
-      background: radial-gradient(circle at 30% 30%, transparent 40%, rgba(0, 0, 0, 0.1) 100%);
-      box-shadow: inset 0 0 8px 1px rgba(0, 0, 0, 0.3);
-      transform: scale(0.8);
-
-      @apply nth-1:bg-white
+      @apply after:absolute after:w-[115%] after:h-[115%] after:bg-steampunk-coal after:rounded-full
+        nth-1:after:top-1/4 nth-1:after:left-1/4
+        nth-2:after:top-1/4 nth-2:after:right-1/4
+        nth-3:after:bottom-1/4 nth-3:after:left-1/4
+        nth-4:after:bottom-1/4 nth-4:after:right-1/4
+        nth-5:after:top-1/4 nth-5:after:right-1/4;
     }
   }
 }
@@ -350,11 +493,6 @@
 @keyframes gear-rotate {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-@keyframes nixie-glow {
-  0%, 100% { text-shadow: 0 0 5px theme('colors.steampunk.gold','pink'), 0 0 10px theme('colors.steampunk.gold','pink'); }
-  50% { text-shadow: 0 0 10px theme('colors.steampunk.gold','pink'), 0 0 20px theme('colors.steampunk.gold','pink'); }
 }
 
 @keyframes lever-pull {
@@ -383,11 +521,11 @@
 
 @keyframes button-glow {
   from {
-    --glow-color: theme('colors.steampunk.gold','pink');
+    --glow-color: var(--color-steampunk-gold, 'pink');
     box-shadow: 0 0 15px 5px hsla(var(--glow-color), 0.7);
   }
   to {
-    --glow-color: theme('colors.steampunk.gold','pink');
+    --glow-color: var(--color-steampunk-gold, 'pink');
     box-shadow: 0 0 0 0 hsla(var(--glow-color), 0);
   }
 }
@@ -410,9 +548,21 @@
 }
 
 @keyframes glow-victory {
-  0% { opacity: 0; box-shadow: 0 0 50px 30px theme('colors.steampunk.gold','pink'); }
-  50% { opacity: 0.5; box-shadow: 0 0 150px 80px theme('colors.steampunk.gold','pink'); }
-  100% { opacity: 0; box-shadow: 0 0 50px 30px theme('colors.steampunk.gold','pink'); }
+  0% {
+    --glow-color: var(--color-steampunk-gold, 'pink');
+    opacity: 0;
+    box-shadow: 0 0 50px 30px var(--glow-color);
+  }
+  50% {
+    --glow-color: var(--color-steampunk-gold, 'pink');
+    opacity: 0.5;
+    box-shadow: 0 0 150px 80px var(--glow-color);
+  }
+  100% {
+    --glow-color: var(--color-steampunk-gold, 'pink');
+    opacity: 0;
+    box-shadow: 0 0 50px 30px var(--glow-color);
+  }
 }
 
 @keyframes flicker-defeat {
@@ -449,10 +599,6 @@
 
 .animate-gear-rotate {
   animation: gear-rotate 20s linear infinite;
-}
-
-.animate-nixie-glow {
-  animation: nixie-glow 1.5s ease-in-out infinite;
 }
 
 .animate-lever-pull {
