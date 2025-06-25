@@ -132,17 +132,10 @@ export const TuringMachine: React.FC = () => {
         <div className="rivet top-1/2 left-2 -translate-y-1/2"></div>
         <div className="rivet top-1/2 right-2 -translate-y-1/2"></div>
 
-        {/* New Decorative Elements */}
-        <div className="chimney">
-          <div className="smoke"></div>
-          <div className="smoke"></div>
-          <div className="smoke"></div>
-        </div>
         <div className="decorative-pipe pipe-1"></div>
         <div className="decorative-pipe pipe-2"></div>
-        <div className="absolute bottom-4 right-4 text-steampunk-bronze animate-gear-rotate" style={{ animationDuration: '10s' }}>
-          <Cog size={40} />
-        </div>
+        <Cog className="gear absolute top-4 right-4" size={40} />
+        <Cog className="gear absolute top-4 left-4" size={40} />
 
         <div className="container mx-auto px-4 py-6 relative z-10">
           <GameHeader gameState={gameState} />
