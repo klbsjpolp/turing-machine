@@ -52,7 +52,6 @@ export const TuringMachine: React.FC = () => {
         cardId: cardId,
       });
       setGameState(newGameState);
-      setAnalyzingCardId(null);
 
       const card = newGameState.criteriaCards.find((c) => c.id === cardId);
       if (card?.testResult === 'success') {
@@ -62,7 +61,10 @@ export const TuringMachine: React.FC = () => {
         console.log('❌ BUZZ! Analysis failed!');
         triggerLightingEffect('failure');
       }
-    }, 1000); // Corresponds to animation duration
+    }, 2000); // Corresponds to half animation duration
+    setTimeout(() => {
+      setAnalyzingCardId(null);
+    }, 4000); // Corresponds to animation duration
   };
 
   const handleNextRound = () => {

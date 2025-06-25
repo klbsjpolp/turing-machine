@@ -54,6 +54,8 @@ layer(base);
   --color-steampunk-amethyst: #a666cc;
   --color-steampunk-steam: #e9e8e2;
   --color-steampunk-coal: #26282c;
+  --color-steampunk-paper: #f5e8c8;
+  --color-steampunk-paper-light: #fcf3d9;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -361,9 +363,8 @@ layer(base);
   }
 
   .paper-panel {
-    @apply p-4 rounded-sm;
-    background-color: #f5e8c8; /* Aged paper color */
-    border: 1px solid #d3c4a4;
+    @apply p-4 rounded-sm border;
+    background-color: var(--color-steampunk-paper);
     color: #5a3d33;
     font-family: 'Courier New', Courier, monospace;
     box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
@@ -413,37 +414,91 @@ layer(base);
   }
 
   .history-entry {
-    @apply p-2 rounded-sm border;
-    border-color: #d3c4a4;
-    background-color: #fcf3d9; /* Slightly lighter paper */
+    @apply p-2 rounded-sm border bg-steampunk-paper-light;
   }
 
   .punch-card-container {
-    @apply relative bg-pink-900/50;
+    @apply relative overflow-hidden;
     perspective: 1000px;
-    transform-style: preserve-3d;
-    min-height: 150px; /* Ensure container has enough height */
+    min-height: 150px;
+    transform: translateZ(0);
+    z-index: 0;
+    position: relative;
 
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
+    .punch-card-backdrop-walls {
+      @apply absolute top-0 left-0 w-full h-full;
+      border-inline: 100px solid var(--color-steampunk-bronze);
+      border-top: 55px solid var(--color-steampunk-brass);
+    }
+
+    .punch-card-backdrop-back {
+      @apply absolute top-[13px] left-[23px] w-[calc(100%_-_23px)] h-full bg-steampunk-dark-bronze;
+    }
+
+    .punch-card {
+      @apply cursor-pointer p-3 rounded-sm transition-all duration-200 flex flex-col gap-2 relative border bg-steampunk-paper;
+      color: #5a3d33;
+      font-family: 'Courier New', Courier, monospace;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      overflow: hidden;
+      perspective: 1000px;
+      top: 0;
       left: 0;
-      width: 100%;
-      height: 25%;
-      background-color: rgba(38, 40, 44, 0.3); /* steampunk-coal with transparency */
-      transform: translateY(100%);
-      opacity: 0;
-      transition: opacity 0.3s ease-out;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: inset 0 10px 15px -5px rgba(0, 0, 0, 0.3);
-      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29-22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
-    }
 
-    &:has(.punch-card.analyzing) {
-    }
+      /* Paper texture */
+      background-image:
+              linear-gradient(90deg, rgba(255,255,255,.2) 1px, transparent 1px),
+              linear-gradient(rgba(255,255,255,.2) 1px, transparent 1px),
+              linear-gradient(to bottom, var(--color-steampunk-paper), #f0e0b8);
+      background-size: 20px 20px, 20px 20px, 100% 100%;
 
-    &:not(:has(.punch-card.analyzing)) {
+      /* Initial shadow state */
+      &.analyzing {
+        animation: card-insert 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        transform-origin: center bottom;
+        transform: translateZ(1px);
+        z-index: 10 !important;
+      }
+
+      .punch-card-header {
+        @apply flex justify-between items-center border-b-2 border-dashed border-amber-800/30 pb-2;
+      }
+
+      .punch-card-body {
+        @apply flex-grow space-y-1;
+      }
+
+      .punch-row {
+        @apply flex items-center gap-2 text-sm;
+
+        & > span {
+          @apply font-bold text-amber-900;
+        }
+      }
+
+      .punch-divider {
+        @apply flex items-center justify-center gap-2 text-xs text-amber-900/60;
+      }
+
+      .punch-card-footer {
+        @apply flex justify-around items-center border-t-2 border-dashed border-amber-800/30 pt-2 mt-1;
+      }
+
+      .hole {
+        @apply w-3 h-3 rounded-full bg-amber-900/20 relative transition-all duration-300 ease-in-out;
+        box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0);
+      }
+
+      &.used .hole {
+        @apply after:absolute after:w-[115%] after:h-[115%] after:bg-steampunk-coal after:rounded-full
+        nth-1:after:top-1/4 nth-1:after:left-1/6
+        nth-2:after:top-1/4 nth-2:after:right-1/8
+        nth-3:after:bottom-1/4 nth-3:after:left-1/4
+        nth-4:after:bottom-1/8 nth-4:after:right-1/4
+        nth-5:after:top-1/4 nth-5:after:right-1/6;
+      }
     }
   }
 
@@ -527,102 +582,30 @@ layer(base);
     animation: dim-pulse 1.5s ease-in-out;
   }
 
-  .punch-card {
-    @apply cursor-pointer p-3 rounded-sm transition-all duration-200 flex flex-col gap-2 relative;
-    background-color: #f5e8c8; /* Aged paper color */
-    border: 1px solid #d3c4a4;
-    color: #5a3d33;
-    font-family: 'Courier New', Courier, monospace;
-    transform-style: preserve-3d;
-    transform-origin: center bottom;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    position: relative;
-    overflow: hidden;
-    perspective: 1000px;
-
-    /* Paper texture */
-    background-image:
-            linear-gradient(90deg, rgba(255,255,255,.2) 1px, transparent 1px),
-            linear-gradient(rgba(255,255,255,.2) 1px, transparent 1px),
-            linear-gradient(to bottom, #f5e8c8, #f0e0b8);
-    background-size: 20px 20px, 20px 20px, 100% 100%;
-
-    /* Initial shadow state */
-    &.analyzing {
-      animation: card-insert 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    .punch-card-header {
-      @apply flex justify-between items-center border-b-2 border-dashed border-amber-800/30 pb-2;
-    }
-
-    .punch-card-body {
-      @apply flex-grow space-y-1;
-    }
-
-    .punch-row {
-      @apply flex items-center gap-2 text-sm;
-
-      & > span {
-        @apply font-bold text-amber-900;
-      }
-    }
-
-    .punch-divider {
-      @apply flex items-center justify-center gap-2 text-xs text-amber-900/60;
-    }
-
-    .punch-card-footer {
-      @apply flex justify-around items-center border-t-2 border-dashed border-amber-800/30 pt-2 mt-1;
-    }
-
-    .hole {
-      @apply w-3 h-3 rounded-full bg-amber-900/20 relative transition-all duration-300 ease-in-out;
-      box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0);
-    }
-
-    &.used .hole {
-      @apply after:absolute after:w-[115%] after:h-[115%] after:bg-steampunk-coal after:rounded-full
-      nth-1:after:top-1/4 nth-1:after:left-1/6
-      nth-2:after:top-1/4 nth-2:after:right-1/8
-      nth-3:after:bottom-1/4 nth-3:after:left-1/4
-      nth-4:after:bottom-1/8 nth-4:after:right-1/4
-      nth-5:after:top-1/4 nth-5:after:right-1/6;
-    }
-  }
-
   @keyframes card-insert {
     /* Initial state */
     0% {
       transform: translateZ(0) translateY(0) scale(1);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
     /* Move backward while maintaining bottom edge position */
     20% {
-      transform: translateZ(-60px) scale(0.95) translateY(0);
-      box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
+      transform: translateZ(-100px) translateY(5%) scale(0.85);
     }
     /* Insert into slot - single smooth downward movement */
     40% {
-      transform: translateZ(-60px) scale(0.95) translateY(25%);
+      transform: translateZ(-100px) translateY(25%) scale(0.85);
     }
     /* Show result state - hold position */
     60% {
-      transform: translateZ(-60px) scale(0.95) translateY(25%);
+      transform: translateZ(-100px) translateY(25%) scale(0.85);
     }
     /* Start moving back up */
-    75% {
-      transform: translateZ(-60px) scale(0.95) translateY(0);
-    }
-    /* Start moving forward */
-    90% {
-      transform: translateZ(-30px) scale(0.97) translateY(0);
+    80% {
+      transform: translateZ(-100px) translateY(5%) scale(0.85);
     }
     /* Return to original position */
     100% {
-      transform: translateZ(0) scale(1) translateY(0);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transform: translateZ(0) translateY(0) scale(1);
     }
   }
 }
