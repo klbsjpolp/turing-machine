@@ -61,10 +61,10 @@ export const TuringMachine: React.FC = () => {
         console.log('❌ BUZZ! Analysis failed!');
         triggerLightingEffect('failure');
       }
-    }, 2000); // Corresponds to half animation duration
+    }, 1000); // Corresponds to half animation duration
     setTimeout(() => {
       setAnalyzingCardId(null);
-    }, 4000); // Corresponds to animation duration
+    }, 2000); // Corresponds to animation duration
   };
 
   const handleNextRound = () => {

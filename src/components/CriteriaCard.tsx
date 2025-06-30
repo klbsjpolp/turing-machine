@@ -30,47 +30,49 @@ export const CriteriaCardComponent: React.FC<CriteriaCardComponentProps> = ({
     <div className="punch-card-container">
       <div className="punch-card-backdrop-walls" />
       <div className="punch-card-backdrop-back" />
-      <div
-        onClick={onAnalyze}
-        className={`punch-card ${isAnalyzing ? 'analyzing' : ''} ${used ? 'used' : ''}`}
-      >
-        <div className="punch-card-header">
-          <h3 className="font-bold truncate">
-            {formatRuleWithColors(card.name)}
-          </h3>
-          <div className="punch-card-result">
-            {getResultIcon()}
-          </div>
-        </div>
-
-        <div className="punch-card-body">
-          <div className="punch-row">
-            <span>A:</span>
-            <p className="inline">
-              {formatRuleWithColors(card.ruleA)}
-            </p>
+      <div className="punch-card-overflow-handler">
+        <div
+          onClick={onAnalyze}
+          className={`punch-card ${isAnalyzing ? 'analyzing' : ''} ${used ? 'used' : ''}`}
+        >
+          <div className="punch-card-header">
+            <h3 className="font-bold truncate">
+              {formatRuleWithColors(card.name)}
+            </h3>
+            <div className="punch-card-result">
+              {getResultIcon()}
+            </div>
           </div>
 
-          <div className="punch-divider">
-            <GitCommitHorizontal size={16} className="opacity-50" />
-            <span>OU</span>
-            <GitCommitHorizontal size={16} className="opacity-50" />
+          <div className="punch-card-body">
+            <div     className="punch-row">
+              <span>A:</span>
+              <p className="inline">
+                {formatRuleWithColors(card.ruleA)}
+              </p>
+            </div>
+
+            <div className="punch-divider">
+              <GitCommitHorizontal size={16} className="opacity-50" />
+              <span>OU</span>
+              <GitCommitHorizontal size={16} className="opacity-50" />
+            </div>
+
+            <div className="punch-row">
+              <span>B:</span>
+              <p className="inline">
+                {formatRuleWithColors(card.ruleB)}
+              </p>
+            </div>
           </div>
 
-          <div className="punch-row">
-            <span>B:</span>
-            <p className="inline">
-              {formatRuleWithColors(card.ruleB)}
-            </p>
+          <div className="punch-card-footer">
+            <div className="hole"></div>
+            <div className="hole"></div>
+            <div className="hole"></div>
+            <div className="hole"></div>
+            <div className="hole"></div>
           </div>
-        </div>
-
-        <div className="punch-card-footer">
-          <div className="hole"></div>
-          <div className="hole"></div>
-          <div className="hole"></div>
-          <div className="hole"></div>
-          <div className="hole"></div>
         </div>
       </div>
     </div>

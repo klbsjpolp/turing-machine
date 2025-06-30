@@ -56,6 +56,8 @@ layer(base);
   --color-steampunk-coal: #26282c;
   --color-steampunk-paper: #f5e8c8;
   --color-steampunk-paper-light: #fcf3d9;
+  --color-steampunk-green: #264d39;
+  --color-steampunk-blue: #1e1e2e;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -129,7 +131,7 @@ layer(base);
 @utility container {
   margin-inline: auto;
   padding-inline: 2rem;
-  @media (width >= --theme(--breakpoint-sm)) {
+  @media (width >= 640px) {
     max-width: none;
   }
   @media (width >= 1400px) {
@@ -418,34 +420,68 @@ layer(base);
   }
 
   .punch-card-container {
-    @apply relative overflow-hidden;
+    @apply relative w-full my-8;
     perspective: 1000px;
-    min-height: 150px;
-    transform: translateZ(0);
-    z-index: 0;
-    position: relative;
+    transform-style: preserve-3d;
+    z-index: 5;
+    overflow: hidden;
 
     .punch-card-backdrop-walls {
-      @apply absolute top-0 left-0 w-full h-full;
-      border-inline: 100px solid var(--color-steampunk-bronze);
-      border-top: 55px solid var(--color-steampunk-brass);
+      @apply absolute top-0 left-0 w-full h-[164px] pointer-events-none;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+
+      /* Left wall */
+      &::before {
+        content: '';
+        @apply absolute top-0 left-0;
+        width: 100px;
+        height: 100%;
+        background: linear-gradient(to right, var(--color-steampunk-bronze), var(--color-steampunk-dark-bronze));
+        transform-origin: left center;
+        transform: translate3d(22px, 8px, -50px) rotateY(-90deg);
+        box-shadow: inset -10px 0 20px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Right wall */
+      &::after {
+        content: '';
+        @apply absolute top-0 right-0;
+        width: 100px;
+        height: 100%;
+        background: linear-gradient(to left, var(--color-steampunk-bronze), var(--color-steampunk-dark-bronze));
+        transform-origin: right center;
+        transform: translate3d(-22px, 8px, -50px) rotateY(90deg) ;
+        box-shadow: inset 10px 0 20px rgba(0, 0, 0, 0.3);
+      }
     }
 
     .punch-card-backdrop-back {
-      @apply absolute top-[13px] left-[23px] w-[calc(100%_-_23px)] h-full bg-steampunk-dark-bronze;
+      @apply absolute pointer-events-none;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--color-steampunk-dark-bronze), var(--color-steampunk-coal));
+      transform-style: preserve-3d;
+      transform: translateZ(-170px) translateY(20px);
+
+      /* Add some depth shading */
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--color-steampunk-bronze);
+    }
+
+    .punch-card-overflow-handler {
+      @apply w-full h-full overflow-hidden;
     }
 
     .punch-card {
-      @apply cursor-pointer p-3 rounded-sm transition-all duration-200 flex flex-col gap-2 relative border bg-steampunk-paper;
+      @apply cursor-pointer p-3 rounded-sm transition-all duration-300 flex flex-col gap-2 relative bg-steampunk-paper;
+      transform-origin: center bottom;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
       color: #5a3d33;
       font-family: 'Courier New', Courier, monospace;
       transform-style: preserve-3d;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      overflow: hidden;
-      perspective: 1000px;
-      top: 0;
-      left: 0;
 
       /* Paper texture */
       background-image:
@@ -456,10 +492,9 @@ layer(base);
 
       /* Initial shadow state */
       &.analyzing {
-        animation: card-insert 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation: card-insert 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         transform-origin: center bottom;
-        transform: translateZ(1px);
-        z-index: 10 !important;
+        z-index: 10;
       }
 
       .punch-card-header {
@@ -583,29 +618,25 @@ layer(base);
   }
 
   @keyframes card-insert {
-    /* Initial state */
     0% {
-      transform: translateZ(0) translateY(0) scale(1);
+      transform: translateY(0) scale(1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
     }
-    /* Move backward while maintaining bottom edge position */
     20% {
-      transform: translateZ(-100px) translateY(5%) scale(0.85);
+      transform: translateY(0%) scale(0.85);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
     }
-    /* Insert into slot - single smooth downward movement */
-    40% {
-      transform: translateZ(-100px) translateY(25%) scale(0.85);
+    40%, 60% {
+      transform: translateY(25%) scale(0.85);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
     }
-    /* Show result state - hold position */
-    60% {
-      transform: translateZ(-100px) translateY(25%) scale(0.85);
-    }
-    /* Start moving back up */
     80% {
-      transform: translateZ(-100px) translateY(5%) scale(0.85);
+      transform: translateY(0%) scale(0.85);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
     }
-    /* Return to original position */
     100% {
-      transform: translateZ(0) translateY(0) scale(1);
+      transform: translateY(0) scale(1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
     }
   }
 }
