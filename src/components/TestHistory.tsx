@@ -30,7 +30,7 @@ export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards
           </div>
         ) : (
           <div className="space-y-2">
-            {history.reverse().map((entry, index) => (
+            {history.map((entry, index) => (
               <div
                 key={index}
                 className="history-entry animate-fade-in"

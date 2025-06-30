@@ -56,12 +56,12 @@ export function validateCriteria(combination: Combination, card: CriteriaCard): 
     case 'B_compare_eq_saphir_topaze': ruleAResult = saphir === topaze; break;
     case 'B_compare_eq_topaze_amethyst': ruleAResult = topaze === amethyst; break;
     case 'B_compare_eq_saphir_amethyst': ruleAResult = saphir === amethyst; break;
-    case 'B_smallest_is_saphir': ruleAResult = min === saphir && uniqueValues.size > 1; break;
-    case 'B_smallest_is_topaze': ruleAResult = min === topaze && uniqueValues.size > 1; break;
-    case 'B_smallest_is_amethyst': ruleAResult = min === amethyst && uniqueValues.size > 1; break;
-    case 'B_largest_is_saphir': ruleAResult = max === saphir && uniqueValues.size > 1; break;
-    case 'B_largest_is_topaze': ruleAResult = max === topaze && uniqueValues.size > 1; break;
-    case 'B_largest_is_amethyst': ruleAResult = max === amethyst && uniqueValues.size > 1; break;
+    case 'B_smallest_is_saphir': ruleAResult = min === saphir; break;
+    case 'B_smallest_is_topaze': ruleAResult = min === topaze; break;
+    case 'B_smallest_is_amethyst': ruleAResult = min === amethyst; break;
+    case 'B_largest_is_saphir': ruleAResult = max === saphir; break;
+    case 'B_largest_is_topaze': ruleAResult = max === topaze; break;
+    case 'B_largest_is_amethyst': ruleAResult = max === amethyst; break;
 
     // === CATEGORY C: GLOBAL CONDITIONS ===
     case 'C_sum_gt8': ruleAResult = sum > 8; break;

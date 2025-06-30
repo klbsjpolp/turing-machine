@@ -39,12 +39,12 @@ export function performTest(gameState: GameState, testSchema: TestSchema): GameS
     c.id === testSchema.cardId ? { ...c, testResult: result } : c
   );
 
-  const newHistory = [...gameState.testHistory, {
+  const newHistory = [{
     round: gameState.currentRound,
     test: testSchema.combination,
     cardId: testSchema.cardId,
     result
-  }];
+  }, ...gameState.testHistory];
 
   return {
     ...gameState,

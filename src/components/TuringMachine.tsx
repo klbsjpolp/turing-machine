@@ -9,6 +9,7 @@ import { TestHistory } from './TestHistory';
 import { SteamBackground } from './SteamBackground';
 import { LightingOverlay, LightingEffect } from './LightingOverlay';
 import { Cog, Settings } from 'lucide-react';
+import {CriteriaCardSimpleComponent} from "@/components/CriteriaCardSimple.tsx";
 
 export const TuringMachine: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(() => initializeGame());
@@ -255,18 +256,15 @@ export const TuringMachine: React.FC = () => {
                       </p>
                     </div>
                   </div>
-
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                     <div className="space-y-4">
                       <h2 className="text-2xl font-bold text-steampunk-steam text-center mb-6">
                         Cartes critères
                       </h2>
                       {gameState.criteriaCards.map((card) => (
-                        <CriteriaCardComponent
+                        <CriteriaCardSimpleComponent
                           key={card.id}
                           card={card}
-                          isAnalyzing={false}
-                          onAnalyze={() => {}}
                         />
                       ))}
                     </div>
