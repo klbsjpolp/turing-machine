@@ -1,0 +1,45 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#CD7F32;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#B8860B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B4513;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="centerGrad" cx="50%" cy="30%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B4513;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="32" height="32" fill="#2D1810" rx="4"/>
+  
+  <!-- Main gear -->
+  <g transform="translate(16,16)">
+    <!-- Outer gear ring -->
+    <circle r="12" fill="url(#metalGrad)" stroke="#654321" stroke-width="1"/>
+    <!-- Gear teeth -->
+    <g fill="url(#metalGrad)" stroke="#654321" stroke-width="0.5">
+      <rect x="-1" y="-14" width="2" height="2"/>
+      <rect x="-1" y="12" width="2" height="2"/>
+      <rect x="12" y="-1" width="2" height="2"/>
+      <rect x="-14" y="-1" width="2" height="2"/>
+      <rect x="8" y="-10" width="2" height="2"/>
+      <rect x="-10" y="-10" width="2" height="2"/>
+      <rect x="8" y="8" width="2" height="2"/>
+      <rect x="-10" y="8" width="2" height="2"/>
+    </g>
+    <!-- Inner ring -->
+    <circle r="7" fill="#654321"/>
+    <!-- Center with gem-like appearance -->
+    <circle r="4" fill="url(#centerGrad)"/>
+    <!-- Center hole -->
+    <circle r="2" fill="#2D1810"/>
+  </g>
+  
+  <!-- Small decorative rivets in corners -->
+  <circle cx="4" cy="4" r="1" fill="#8B4513"/>
+  <circle cx="28" cy="4" r="1" fill="#8B4513"/>
+  <circle cx="4" cy="28" r="1" fill="#8B4513"/>
+  <circle cx="28" cy="28" r="1" fill="#8B4513"/>
+</svg>

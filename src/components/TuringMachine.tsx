@@ -10,6 +10,7 @@ import { SteamBackground } from './SteamBackground';
 import { LightingOverlay, LightingEffect } from './LightingOverlay';
 import { Cog, Settings } from 'lucide-react';
 import {CriteriaCardSimpleComponent} from "@/components/CriteriaCardSimple.tsx";
+import {SequenceDisplay} from "@/components/SequenceDisplay.tsx";
 
 export const TuringMachine: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(() => initializeGame());
@@ -202,19 +203,20 @@ export const TuringMachine: React.FC = () => {
               </div>
 
               {/* Center Panel - Criteria Cards */}
-              <div className="xl:col-span-1 space-y-4">
-                <h2 className="text-2xl font-bold text-steampunk-steam text-center mb-6">
+              <div className="paper-panel h-full flex flex-col">
+                <div className="paper-panel-title">
                   Cartes Critères
-                </h2>
-                
-                {gameState.criteriaCards.map((card) => (
-                  <CriteriaCardComponent
-                    key={card.id}
-                    card={card}
-                    isAnalyzing={analyzingCardId === card.id}
-                    onAnalyze={() => handleCardAnalyze(card.id)}
-                  />
-                ))}
+                </div>
+                <div className="space-y-4">
+                  {gameState.criteriaCards.map((card) => (
+                    <CriteriaCardComponent
+                      key={card.id}
+                      card={card}
+                      isAnalyzing={analyzingCardId === card.id}
+                      onAnalyze={() => handleCardAnalyze(card.id)}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Right Panel - History and Info */}
@@ -227,7 +229,7 @@ export const TuringMachine: React.FC = () => {
           {/* Game Over States */}
           {gameState.gameStatus !== 'playing' && (
             <>
-              {gameState.gameStatus === 'abandoned' || gameState.gameStatus === 'won' ? (
+              {gameState.gameStatus === 'abandoned' || gameState.gameStatus === 'won' || gameState.gameStatus === 'lost' ? (
                 <div className="mt-8">
                   <div className="text-center mb-8 paper-panel">
                     {gameState.gameStatus === 'won' ? (
@@ -237,6 +239,15 @@ export const TuringMachine: React.FC = () => {
                         </h2>
                         <p className="text-lg mb-2">
                           Félicitations! Vous avez déchiffré l'Automate.
+                        </p>
+                      </>
+                    ) : gameState.gameStatus === 'lost' ? (
+                      <>
+                        <h2 className="text-3xl font-bold mb-4 text-red-800">
+                          SURCHARGE!
+                        </h2>
+                        <p className="text-lg mb-2">
+                          L'Automate s'est protégé.
                         </p>
                       </>
                     ) : (
@@ -251,33 +262,32 @@ export const TuringMachine: React.FC = () => {
                     )}
                     <div className="mt-4 inline-block bg-black/5 p-4 rounded-lg border border-amber-900/30">
                       <p className="text-lg">Combinaison maîtresse:</p>
-                      <p className="text-2xl font-bold text-amber-900">
-                        {gameState.masterCombination.saphir}-{gameState.masterCombination.topaze}-{gameState.masterCombination.amethyst}
+                      <p className="text-2xl">
+                        <SequenceDisplay
+                          saphir={gameState.masterCombination.saphir}
+                          topaze={gameState.masterCombination.topaze}
+                          amethyst={gameState.masterCombination.amethyst}
+                        />
                       </p>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                      <h2 className="text-2xl font-bold text-steampunk-steam text-center mb-6">
+                    <div className="paper-panel h-full flex flex-col">
+                      <div className="paper-panel-title">
                         Cartes critères
-                      </h2>
-                      {gameState.criteriaCards.map((card) => (
-                        <CriteriaCardSimpleComponent
-                          key={card.id}
-                          card={card}
-                        />
-                      ))}
+                      </div>
+                      <div className="space-y-4">
+                        {gameState.criteriaCards.map((card) => (
+                          <CriteriaCardSimpleComponent
+                            key={card.id}
+                            card={card}
+                          />
+                        ))}
+                      </div>
                     </div>
-                    
-                    <div>
-                      <h2 className="text-2xl font-bold text-steampunk-steam text-center mb-6">
-                        Journal de bord
-                      </h2>
-                      <TestHistory history={gameState.testHistory} criteriaCards={gameState.criteriaCards} />
-                    </div>
+                    <TestHistory history={gameState.testHistory} criteriaCards={gameState.criteriaCards} />
                   </div>
-
-                  <div className="text-center mt-12">
+                  <div className="text-center mt-6">
                     <Button
                       onClick={handleNewGame}
                       className="ink-button w-auto px-8"
@@ -290,20 +300,6 @@ export const TuringMachine: React.FC = () => {
               ) : (
                 <div className="mt-8 text-center">
                   <div className="paper-panel max-w-lg mx-auto">
-                    {gameState.gameStatus === 'lost' && (
-                      <div>
-                        <h2 className="text-3xl font-bold mb-4 text-red-800">
-                          SURCHARGE!
-                        </h2>
-                        <p className="text-lg mb-6">
-                          L'Automate s'est protégé. La solution était:
-                        </p>
-                        <p className="text-xl font-bold mb-6">
-                          {gameState.masterCombination.saphir}-{gameState.masterCombination.topaze}-{gameState.masterCombination.amethyst}
-                        </p>
-                      </div>
-                    )}
-
                     <Button
                       onClick={handleNewGame}
                       className="ink-button mt-4"

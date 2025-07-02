@@ -15,11 +15,8 @@ export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards
 
   return (
     <div className="paper-panel h-full flex flex-col">
-      <div className="flex items-center gap-3 mb-4">
-        <FileText size={24} />
-        <h2 className="text-2xl font-bold">
-          Journal de bord
-        </h2>
+      <div className="paper-panel-title">
+        Journal de bord
       </div>
 
       <ScrollArea className="h-96 flex-grow pr-3">
@@ -79,7 +76,7 @@ export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards
 
       {history.length > 0 && (
         <div className="mt-4 p-3 bg-linear-to-r from-steampunk-brass/20 to-steampunk-gold/20 rounded border border-steampunk-gold/50">
-          <div className="text-steampunk-steam text-sm text-center">
+          <div className="text-steampunk-blue text-sm text-center">
             <span className="font-bold">{history.length}</span> analyse{history.length > 1 ? 's' : ''} effectuée{history.length > 1 ? 's' : ''}
           </div>
         </div>

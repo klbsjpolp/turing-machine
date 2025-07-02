@@ -19,7 +19,7 @@ export const LightingOverlay: React.FC<LightingOverlayProps> = ({ effect }) => {
 
   return (
     <div
-      className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-1000 ${effectClasses[effect]}`}
+      className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-1000 z-5 ${effectClasses[effect]}`}
       style={{ mixBlendMode: 'color-dodge' }}
     />
   );
