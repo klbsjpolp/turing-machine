@@ -29,6 +29,7 @@ export const CriteriaCardComponent: React.FC<CriteriaCardComponentProps> = ({
   return (
     <div className="punch-card-container">
       <div className="punch-card-backdrop-walls" />
+      <div className="punch-card-backdrop-wall-top" />
       <div className="punch-card-backdrop-back" />
       <div className="punch-card-overflow-handler">
         <div
