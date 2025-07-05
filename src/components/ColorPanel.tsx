@@ -13,13 +13,17 @@ interface ColorPanelProps {
   selectedDigit: Digit;
   onDigitSelect: (color: Color, digit: Digit) => void;
   disabled?: boolean;
+  impossibleNumbers?: Set<Digit>;
+  onToggleImpossible?: (color: Color, digit: Digit) => void;
 }
 
 export const ColorPanel: React.FC<ColorPanelProps> = ({
   color,
   selectedDigit,
   onDigitSelect,
-  disabled
+  disabled,
+  impossibleNumbers = new Set(),
+  onToggleImpossible
 }) => {
   const colorConfig = {
     saphir: {
@@ -64,22 +68,34 @@ export const ColorPanel: React.FC<ColorPanelProps> = ({
         {config.name}
       </h3>
       
-      <div className="flex justify-center items-end h-20 relative">
+      <div className="flex justify-center items-end relative">
         {[1, 2, 3, 4, 5].map((digit) => {
           const isSelected = digit === selectedDigit;
           const isAnimating = digit === animatingDigit;
-          
+          const isImpossible = impossibleNumbers.has(digit as Digit);
+
           return (
-            <button
-              key={digit}
-              ref={el => digitRefs.current[digit - 1] = el}
-              disabled={disabled}
-              className={`digit-selector ${isSelected ? 'selected' : ''} ${isAnimating ? 'animating' : ''}`}
-              onClick={() => handleDigitClick(digit)}
-            >
-              <span className="digit-value">{digit}</span>
-              <div className="digit-rail"></div>
-            </button>
+            <div key={digit} className="flex flex-col items-center mx-1">
+              <button
+                ref={el => digitRefs.current[digit - 1] = el}
+                disabled={disabled || isImpossible}
+                className={`digit-selector ${isSelected ? 'selected' : ''} ${isAnimating ? 'animating' : ''} ${isImpossible ? 'impossible' : ''}`}
+                onClick={() => handleDigitClick(digit)}
+                title={isImpossible ? "Chiffre marqué comme impossible" : undefined}
+              >
+                <span className="digit-value">{digit}</span>
+                <div className="digit-rail"></div>
+              </button>
+                <button
+                  type="button"
+                  className={`toggle-impossible-btn text-red-700 bg-red-100 rounded-full mt-1 w-5 h-5 flex items-center justify-center text-xs border ${isImpossible ? 'border-red-700' : 'border-red-200 opacity-50'}`}
+                  disabled={disabled}
+                  aria-label="Marquer comme impossible"
+                  onClick={() => onToggleImpossible && onToggleImpossible(color, digit as Digit)}
+                >
+                  ✗
+                </button>
+            </div>
           );
         })}
       </div>

@@ -1,4 +1,3 @@
-
 export type Color = 'saphir' | 'topaze' | 'amethyst';
 export type Digit = 1 | 2 | 3 | 4 | 5;
 export type TestResult = 'success' | 'failure' | null;
@@ -19,6 +18,12 @@ export interface CriteriaCard {
   testResult: TestResult;
 }
 
+export interface ImpossibleNumbers {
+  saphir: Set<Digit>;
+  topaze: Set<Digit>;
+  amethyst: Set<Digit>;
+}
+
 export interface GameState {
   masterCombination: Combination;
   criteriaCards: CriteriaCard[];
@@ -35,6 +40,7 @@ export interface GameState {
     cardId: string;
     result: TestResult;
   }>;
+  impossibleNumbers: ImpossibleNumbers;
 }
 
 export interface TestSchema {

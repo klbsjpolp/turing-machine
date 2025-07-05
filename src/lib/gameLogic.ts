@@ -14,7 +14,12 @@ export function initializeGame(): GameState {
     currentTest: { saphir: 1, topaze: 1, amethyst: 1 },
     combinationLocked: false, // Start with the combination unlocked
     gameStatus: 'playing',
-    testHistory: []
+    testHistory: [],
+    impossibleNumbers: {
+      saphir: new Set(),
+      topaze: new Set(),
+      amethyst: new Set()
+    }
   };
 }
 

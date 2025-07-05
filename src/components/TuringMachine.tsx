@@ -101,6 +101,23 @@ export const TuringMachine: React.FC = () => {
     setLightingEffect('abandoned');
   };
 
+  const handleToggleImpossible = (color: Color, digit: Digit) => {
+    setGameState(prevState => {
+      const newSet = new Set(prevState.impossibleNumbers[color]);
+      if (newSet.has(digit)) {
+        newSet.delete(digit);
+      } else {
+        newSet.add(digit);
+      }
+      return ({
+      ...prevState,
+      impossibleNumbers: {
+        ...prevState.impossibleNumbers,
+        [color]: newSet
+      }
+    })});
+  };
+
   useEffect(() => {
     if (gameState.gameStatus === 'won') {
       triggerLightingEffect('victory', 2500);
@@ -160,18 +177,24 @@ export const TuringMachine: React.FC = () => {
                       selectedDigit={gameState.currentTest.saphir}
                       onDigitSelect={handleDigitSelect}
                       disabled={gameState.combinationLocked}
+                      impossibleNumbers={gameState.impossibleNumbers.saphir}
+                      onToggleImpossible={handleToggleImpossible}
                     />
                     <ColorPanel
                       color="topaze"
                       selectedDigit={gameState.currentTest.topaze}
                       onDigitSelect={handleDigitSelect}
                       disabled={gameState.combinationLocked}
+                      impossibleNumbers={gameState.impossibleNumbers.topaze}
+                      onToggleImpossible={handleToggleImpossible}
                     />
                     <ColorPanel
                       color="amethyst"
                       selectedDigit={gameState.currentTest.amethyst}
                       onDigitSelect={handleDigitSelect}
                       disabled={gameState.combinationLocked}
+                      impossibleNumbers={gameState.impossibleNumbers.amethyst}
+                      onToggleImpossible={handleToggleImpossible}
                     />
                   </div>
 
