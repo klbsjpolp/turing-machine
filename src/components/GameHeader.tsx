@@ -1,6 +1,6 @@
 import React from 'react';
-import { GameState } from '@/lib/gameTypes';
-import { Clock, Zap, Wrench } from 'lucide-react';
+import {Difficulty, GameState} from '@/lib/gameTypes';
+import {Clock, Zap, Wrench, Star} from 'lucide-react';
 import { SequenceDisplay } from './SequenceDisplay';
 
 interface GameHeaderProps {
@@ -12,6 +12,15 @@ function getFillHeight(numerator: number, denominator: number): string {
   if (numerator === denominator) return '100%';
   const percentage = Math.round((numerator / denominator) * 100);
   return `${percentage}%`;
+}
+
+function getDifficultyDisplay(difficulty: Difficulty) {
+  switch (difficulty) {
+    case 'easy': return 'Facile';
+    case 'medium': return 'Moyen';
+    case 'hard': return 'Difficile';
+    case 'expert': return 'Expert';
+  }
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({ gameState }) => {
@@ -50,7 +59,18 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ gameState }) => {
             </div>
           </div>
         </div>
-
+        <div className="paper-panel p-3 relative">
+          <div className="absolute bottom-0 right-0 w-full bg-steampunk-copper/30" style={{height: getFillHeight(gameState.difficultyScore, 100)}}></div>
+          <div className="flex items-center gap-3">
+            <Star size={28} className="text-amber-900/70" />
+            <div>
+              <div className="text-sm opacity-75 font-semibold">Difficulté</div>
+              <div className="text-xl font-bold">
+                {getDifficultyDisplay(gameState.difficulty)}
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="paper-panel p-3">
           <div className="flex items-center gap-3">
             <Wrench size={28} className="text-amber-900/70" />

@@ -1,6 +1,7 @@
 export type Color = 'saphir' | 'topaze' | 'amethyst';
 export type Digit = 1 | 2 | 3 | 4 | 5;
 export type TestResult = 'success' | 'failure' | null;
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
 export interface Combination {
   saphir: Digit;
@@ -34,6 +35,8 @@ export interface GameState {
   currentTest: Combination;
   combinationLocked: boolean; // Whether the current combination is locked (can't be changed)
   gameStatus: 'playing' | 'won' | 'lost' | 'abandoned';
+  difficulty: Difficulty;
+  difficultyScore: number; // Numerical difficulty score (0-100)
   testHistory: Array<{
     round: number;
     test: Combination;

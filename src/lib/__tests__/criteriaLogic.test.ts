@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import {
   validateCriteria,
-  generateUniqueSolutionSet
+  generateUniqueSolutionSet,
+  calculatePuzzleComplexity,
+  generatePuzzleWithDifficulty
 } from '../criteriaLogic';
 import { Combination, CriteriaCard } from '../gameTypes';
 
@@ -606,7 +608,7 @@ describe('criteriaLogic', () => {
 
     it('should generate unique card families', () => {
       const result = generateUniqueSolutionSet();
-      
+
       // This is a basic check - in a real implementation, we'd need access to getCardFamily
       // For now, just check that we have cards
       expect(result.cards.length).toBeGreaterThan(0);
@@ -616,10 +618,10 @@ describe('criteriaLogic', () => {
       // Generate multiple solution sets to ensure consistency
       for (let i = 0; i < 5; i++) {
         const result = generateUniqueSolutionSet();
-        
+
         expect(result.cards.length).toBeGreaterThan(0);
         expect(result.solution).toBeDefined();
-        
+
         // Each solution should pass its own criteria
         result.cards.forEach(card => {
           expect(validateCriteria(result.solution, card)).toBe(true);
@@ -631,7 +633,7 @@ describe('criteriaLogic', () => {
   describe('Edge cases and boundary conditions', () => {
     it('should handle all minimum values', () => {
       const combination: Combination = { saphir: 1, topaze: 1, amethyst: 1 };
-      
+
       const card: CriteriaCard = {
         id: 'C_sum_gt8',
         name: 'Sum > 8',
@@ -647,7 +649,7 @@ describe('criteriaLogic', () => {
 
     it('should handle all maximum values', () => {
       const combination: Combination = { saphir: 5, topaze: 5, amethyst: 5 };
-      
+
       const card: CriteriaCard = {
         id: 'C_sum_gt8',
         name: 'Sum > 8',
@@ -674,6 +676,215 @@ describe('criteriaLogic', () => {
 
       expect(validateCriteria({ saphir: 3, topaze: 1, amethyst: 1 }, card)).toBe(false); // exactly 3
       expect(validateCriteria({ saphir: 4, topaze: 1, amethyst: 1 }, card)).toBe(true); // just above 3
+    });
+  });
+
+  describe('Difficulty Scoring System', () => {
+    describe('calculatePuzzleComplexity', () => {
+      it('should return a valid complexity score', () => {
+        const mockCards: CriteriaCard[] = [
+          {
+            id: 'A_parity_saphir',
+            name: 'Parité Saphir',
+            ruleA: 'Saphir est PAIR',
+            ruleB: 'Saphir est IMPAIR',
+            category: 'single',
+            successRule: 'A',
+            testResult: null
+          },
+          {
+            id: 'B_compare_gt_saphir_topaze',
+            name: 'Comparaison Saphir/Topaze',
+            ruleA: 'Saphir > Topaze',
+            ruleB: 'Saphir ≤ Topaze',
+            category: 'comparison',
+            successRule: 'A',
+            testResult: null
+          },
+          {
+            id: 'C_sum_gt8',
+            name: 'Somme comparée à 8',
+            ruleA: 'Saphir + Topaze + Améthyste > 8',
+            ruleB: 'Saphir + Topaze + Améthyste ≤ 8',
+            category: 'global',
+            successRule: 'A',
+            testResult: null
+          }
+        ];
+
+        const mockSolution: Combination = { saphir: 4, topaze: 2, amethyst: 3 };
+        const complexity = calculatePuzzleComplexity(mockCards, mockSolution);
+
+        expect(typeof complexity).toBe('number');
+        expect(complexity).toBeGreaterThanOrEqual(0);
+        expect(complexity).toBeLessThanOrEqual(100);
+      });
+
+      it('should give higher scores for more complex card combinations', () => {
+        const simpleCards: CriteriaCard[] = [
+          {
+            id: 'A_equality_saphir_1',
+            name: 'Saphir est 1',
+            ruleA: 'Saphir = 1',
+            ruleB: 'Saphir ≠ 1',
+            category: 'single',
+            successRule: 'A',
+            testResult: null
+          },
+          {
+            id: 'A_equality_topaze_1',
+            name: 'Topaze est 1',
+            ruleA: 'Topaze = 1',
+            ruleB: 'Topaze ≠ 1',
+            category: 'single',
+            successRule: 'A',
+            testResult: null
+          }
+        ];
+
+        const complexCards: CriteriaCard[] = [
+          {
+            id: 'C_sum_gt8',
+            name: 'Somme comparée à 8',
+            ruleA: 'Saphir + Topaze + Améthyste > 8',
+            ruleB: 'Saphir + Topaze + Améthyste ≤ 8',
+            category: 'global',
+            successRule: 'A',
+            testResult: null
+          },
+          {
+            id: 'D_or_pair_ST',
+            name: 'Saphir/Topaze pair',
+            ruleA: 'Saphir est PAIR ou Topaze est PAIR',
+            ruleB: 'Saphir et Topaze sont IMPAIRS',
+            category: 'composite',
+            successRule: 'A',
+            testResult: null
+          }
+        ];
+
+        const solution: Combination = { saphir: 2, topaze: 3, amethyst: 4 };
+
+        const simpleComplexity = calculatePuzzleComplexity(simpleCards, solution);
+        const complexComplexity = calculatePuzzleComplexity(complexCards, solution);
+
+        expect(typeof simpleComplexity).toBe('number');
+        expect(typeof complexComplexity).toBe('number');
+        expect(complexComplexity).toBeGreaterThan(simpleComplexity);
+      });
+
+      it('should handle edge cases gracefully', () => {
+        const emptyCards: CriteriaCard[] = [];
+        const solution: Combination = { saphir: 1, topaze: 1, amethyst: 1 };
+
+        const complexity = calculatePuzzleComplexity(emptyCards, solution);
+        expect(typeof complexity).toBe('number');
+        expect(complexity).toBeGreaterThanOrEqual(0);
+        expect(complexity).toBeLessThanOrEqual(100);
+      });
+    });
+
+    describe('generatePuzzleWithDifficulty', () => {
+      it('should generate puzzles with difficulty scores for all levels', () => {
+        const difficulties = ['easy', 'medium', 'hard', 'expert'] as const;
+
+        const easy = generatePuzzleWithDifficulty('easy');
+        const medium = generatePuzzleWithDifficulty('medium');
+        const hard = generatePuzzleWithDifficulty('hard');
+        const expert = generatePuzzleWithDifficulty('expert');
+
+        // Check that all puzzles have required properties
+        [easy, medium, hard, expert].forEach(puzzle => {
+          expect(puzzle.cards).toBeDefined();
+          expect(puzzle.solution).toBeDefined();
+          expect(puzzle.difficultyScore).toBeDefined();
+          expect(typeof puzzle.difficultyScore).toBe('number');
+        });
+
+        // Check difficulty-specific ranges
+        expect(easy.difficultyScore).toBeGreaterThanOrEqual(0);
+        expect(easy.difficultyScore).toBeLessThanOrEqual(25);
+        expect(medium.difficultyScore).toBeGreaterThanOrEqual(25);
+        expect(medium.difficultyScore).toBeLessThanOrEqual(50);
+        expect(hard.difficultyScore).toBeGreaterThanOrEqual(50);
+        expect(hard.difficultyScore).toBeLessThanOrEqual(75);
+        expect(expert.difficultyScore).toBeGreaterThanOrEqual(75);
+        expect(expert.difficultyScore).toBeLessThanOrEqual(100);
+      });
+
+      it('should generate valid puzzles that have unique solutions', () => {
+        const puzzle = generatePuzzleWithDifficulty('medium');
+
+        // Verify the solution satisfies all cards
+        puzzle.cards.forEach(card => {
+          expect(validateCriteria(puzzle.solution, card)).toBe(true);
+        });
+      });
+
+      it('should generate different card counts for different difficulties', () => {
+        const easy = generatePuzzleWithDifficulty('easy');
+        const medium = generatePuzzleWithDifficulty('medium');
+        const hard = generatePuzzleWithDifficulty('hard');
+        const expert = generatePuzzleWithDifficulty('expert');
+
+        expect(easy.cards.length).toBe(4);
+        expect(medium.cards.length).toBe(5);
+        expect(hard.cards.length).toBeGreaterThanOrEqual(5);
+        expect(hard.cards.length).toBeLessThanOrEqual(6);
+        expect(expert.cards.length).toBeGreaterThanOrEqual(5);
+        expect(expert.cards.length).toBeLessThanOrEqual(7);
+      });
+
+      it('should generate consistent difficulty scores for multiple runs', () => {
+        const scores: number[] = [];
+
+        // Generate multiple puzzles of the same difficulty
+        for (let i = 0; i < 5; i++) {
+          const puzzle = generatePuzzleWithDifficulty('medium');
+          scores.push(puzzle.difficultyScore);
+        }
+
+        // All scores should be valid and in medium difficulty range
+        scores.forEach(score => {
+          expect(typeof score).toBe('number');
+          expect(score).toBeGreaterThanOrEqual(25);
+          expect(score).toBeLessThanOrEqual(50);
+        });
+      });
+
+      it('should include difficulty score in generated puzzle', () => {
+        const puzzle = generatePuzzleWithDifficulty('hard');
+
+        expect(puzzle).toHaveProperty('difficultyScore');
+        expect(typeof puzzle.difficultyScore).toBe('number');
+        expect(puzzle.difficultyScore).toBeGreaterThanOrEqual(50);
+        expect(puzzle.difficultyScore).toBeLessThanOrEqual(75);
+      });
+
+      it('should consistently generate puzzles that meet difficulty score requirements', () => {
+        // Test multiple generations to ensure consistency
+        const testCases = [
+          { difficulty: 'easy' as const, min: 0, max: 25 },
+          { difficulty: 'medium' as const, min: 25, max: 50 },
+          { difficulty: 'hard' as const, min: 50, max: 75 },
+          { difficulty: 'expert' as const, min: 75, max: 100 }
+        ];
+
+        testCases.forEach(({ difficulty, min, max }) => {
+          // Generate multiple puzzles for each difficulty
+          for (let i = 0; i < 3; i++) {
+            const puzzle = generatePuzzleWithDifficulty(difficulty);
+
+            expect(puzzle.difficultyScore).toBeGreaterThanOrEqual(min);
+            expect(puzzle.difficultyScore).toBeLessThanOrEqual(max);
+
+            // Verify the solution satisfies all cards
+            puzzle.cards.forEach(card => {
+              expect(validateCriteria(puzzle.solution, card)).toBe(true);
+            });
+          }
+        });
+      });
     });
   });
 });

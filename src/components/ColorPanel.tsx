@@ -89,7 +89,6 @@ export const ColorPanel: React.FC<ColorPanelProps> = ({
                 <button
                   type="button"
                   className={`toggle-impossible-btn text-red-700 bg-red-100 rounded-full mt-1 w-5 h-5 flex items-center justify-center text-xs border ${isImpossible ? 'border-red-700' : 'border-red-200 opacity-50'}`}
-                  disabled={disabled}
                   aria-label="Marquer comme impossible"
                   onClick={() => onToggleImpossible && onToggleImpossible(color, digit as Digit)}
                 >

@@ -1,19 +1,31 @@
-import { GameState, Combination, TestSchema, TestResult } from './gameTypes';
-import { generateUniqueSolutionSet, validateCriteria } from './criteriaLogic';
+import { GameState, Combination, TestSchema, TestResult, Difficulty } from './gameTypes';
+import { generateUniqueSolutionSet, generatePuzzleWithDifficulty, validateCriteria } from './criteriaLogic';
 
-export function initializeGame(): GameState {
-  const { cards, solution } = generateUniqueSolutionSet();
+export function initializeGame(difficulty: Difficulty = 'expert'): GameState {
+  const { cards, solution, difficultyScore } = generatePuzzleWithDifficulty(difficulty);
+
+  // Adjust game parameters based on difficulty
+  const difficultyParams = {
+    easy: { maxRounds: 5, maxTestsPerRound: 4 },
+    medium: { maxRounds: 7, maxTestsPerRound: 3 },
+    hard: { maxRounds: 8, maxTestsPerRound: 3 },
+    expert: { maxRounds: 10, maxTestsPerRound: 3 }
+  };
+
+  const params = difficultyParams[difficulty];
 
   return {
     masterCombination: solution,
     criteriaCards: cards,
     currentRound: 1,
     testsThisRound: 0,
-    maxRounds: 7,
-    maxTestsPerRound: 3,
+    maxRounds: params.maxRounds,
+    maxTestsPerRound: params.maxTestsPerRound,
     currentTest: { saphir: 1, topaze: 1, amethyst: 1 },
     combinationLocked: false, // Start with the combination unlocked
     gameStatus: 'playing',
+    difficulty,
+    difficultyScore,
     testHistory: [],
     impossibleNumbers: {
       saphir: new Set(),
@@ -87,7 +99,7 @@ export function nextRound(gameState: GameState): GameState {
   }
 
   const newRound = gameState.currentRound + 1;
-  
+
   if (newRound > gameState.maxRounds) {
     return {
       ...gameState,

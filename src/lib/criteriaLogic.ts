@@ -1,4 +1,4 @@
-import { Combination, CriteriaCard, Digit } from './gameTypes';
+import { Combination, CriteriaCard, Digit, Difficulty } from './gameTypes';
 
 // --- Helpers --- //
 
@@ -191,7 +191,7 @@ function getCardFamily(cardId: string): string {
  * Generates a set of criteria cards that guarantees a single unique solution.
  * This is the main function to call to create a new puzzle.
  */
-export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: Combination } {
+export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: Combination; difficultyScore: number } {
   const allCombinations = getAllCombinations();
   const allPossibleCards = getAllPossibleCards();
   let attempts = 0;
@@ -243,15 +243,20 @@ export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: 
         remainingCombinations[0].amethyst === targetSolution.amethyst
       ) {
         console.log(`Generated a unique solution in ${attempts} attempts with 5 cards.`);
-        return { cards: currentCards, solution: targetSolution };
+        const difficultyScore = calculatePuzzleComplexity(currentCards, targetSolution, 'medium');
+        return { cards: currentCards, solution: targetSolution, difficultyScore };
       }
     }
   }
 
   console.error("Failed to generate a unique solution set with 5 cards. Falling back to a failsafe puzzle.");
+  const failsafeCards = generateFailsafeSet();
+  const failsafeSolution: Combination = { saphir: 1, topaze: 2, amethyst: 3 };
+  const difficultyScore = calculatePuzzleComplexity(failsafeCards, failsafeSolution, 'medium');
   return {
-    cards: generateFailsafeSet(),
-    solution: { saphir: 1, topaze: 2, amethyst: 3 },
+    cards: failsafeCards,
+    solution: failsafeSolution,
+    difficultyScore,
   };
 }
 
@@ -263,4 +268,259 @@ function generateFailsafeSet(): CriteriaCard[] {
     { id: 'C_strictly_increasing', name: 'Ordre Croissant', ruleA: 'S < T < A', ruleB: 'Non croissant', category: 'global', successRule: 'A', testResult: null },
     { id: 'C_all_lt4', name: 'Tous Petits', ruleA: 'Tous les chiffres < 4', ruleB: 'Au moins un chiffre ≥ 4', category: 'global', successRule: 'A', testResult: null },
   ];
+}
+
+/**
+ * Calculates the information value of a card based on how many solutions it eliminates
+ */
+function calculateCardInformationValue(card: CriteriaCard, remainingCombinations: Combination[]): number {
+  const satisfying = remainingCombinations.filter(combo => validateCriteria(combo, card));
+  const notSatisfying = remainingCombinations.length - satisfying.length;
+
+  // Information value is higher when the card splits the solution space more evenly
+  // This is based on information theory - maximum information when split is 50/50
+  const ratio = Math.min(satisfying.length, notSatisfying) / remainingCombinations.length;
+  return ratio;
+}
+
+/**
+ * Checks if a difficulty score is within the expected range for a given difficulty level
+ */
+function isScoreInDifficultyRange(score: number, difficulty: Difficulty): boolean {
+  const difficultyRanges = {
+    easy: { min: 0, max: 25 },
+    medium: { min: 25, max: 50 },
+    hard: { min: 50, max: 75 },
+    expert: { min: 75, max: 100 }
+  };
+
+  const range = difficultyRanges[difficulty];
+  return score >= range.min && score <= range.max;
+}
+
+/**
+ * Calculates the overall complexity score of a puzzle with difficulty-specific ranges
+ */
+export function calculatePuzzleComplexity(cards: CriteriaCard[], solution: Combination, difficulty?: Difficulty): number {
+  // Handle edge case of no cards
+  if (cards.length === 0) {
+    return 0;
+  }
+
+  const allCombinations = getAllCombinations();
+  let complexityScore = 0;
+
+  // 1. Category weights - different types of criteria have different base complexity
+  const categoryWeights = {
+    'single': 1,
+    'comparison': 2, 
+    'global': 3,
+    'composite': 4
+  };
+
+  // 2. Information distribution analysis
+  let totalInfoValue = 0;
+  let minInfoValue = 1;
+  let remainingCombinations = [...allCombinations];
+
+  cards.forEach(card => {
+    const infoValue = calculateCardInformationValue(card, remainingCombinations);
+    totalInfoValue += infoValue;
+    minInfoValue = Math.min(minInfoValue, infoValue);
+    complexityScore += categoryWeights[card.category] * infoValue * 10; // Scale up for readability
+
+    // Update remaining combinations for next card
+    remainingCombinations = remainingCombinations.filter(combo => validateCriteria(combo, card));
+  });
+
+  // 3. Bonus for balanced information distribution
+  const avgInfoValue = totalInfoValue / cards.length;
+  const balanceBonus = avgInfoValue > 0 ? minInfoValue / avgInfoValue : 1; // Prevent division by zero
+
+  // 4. Family diversity bonus
+  const families = new Set(cards.map(card => getCardFamily(card.id)));
+  const diversityBonus = families.size / cards.length;
+
+  // 5. Card count factor
+  const cardCountFactor = Math.min(cards.length / 5, 1.5); // Normalize around 5 cards, cap at 1.5x
+
+  // Final score calculation
+  const finalScore = complexityScore * balanceBonus * diversityBonus * cardCountFactor;
+
+  return Math.round(finalScore * 100) / 100; // Round to 2 decimal places
+}
+
+/**
+ * Generates a puzzle with specified difficulty level
+ */
+export function generatePuzzleWithDifficulty(difficulty: Difficulty = 'medium'): { cards: CriteriaCard[]; solution: Combination; difficultyScore: number } {
+  const allCombinations = getAllCombinations();
+  const allPossibleCards = getAllPossibleCards();
+
+  // Difficulty settings
+  const difficultySettings = {
+    easy: { cardCount: 4, maxAttempts: 500, preferHighInfo: false, allowSimilarFamilies: true },
+    medium: { cardCount: 5, maxAttempts: 1000, preferHighInfo: false, allowSimilarFamilies: false },
+    hard: { cardCount: 6, maxAttempts: 1500, preferHighInfo: true, allowSimilarFamilies: false },
+    expert: { cardCount: 7, maxAttempts: 2000, preferHighInfo: true, allowSimilarFamilies: false }
+  };
+
+  const settings = difficultySettings[difficulty];
+  let attempts = 0;
+
+  while (attempts < settings.maxAttempts) {
+    attempts++;
+    const targetSolution = allCombinations[Math.floor(Math.random() * allCombinations.length)];
+
+    const currentCards: CriteriaCard[] = [];
+    const usedCardFamilies = new Set<string>();
+    let remainingCombinations = [...allCombinations];
+
+    // Build card set with difficulty-aware selection
+    const shuffledPossibleCards = [...allPossibleCards].sort(() => Math.random() - 0.5);
+
+    for (const cardDef of shuffledPossibleCards) {
+      if (currentCards.length >= settings.cardCount) break;
+
+      const family = getCardFamily(cardDef.id);
+      if (!settings.allowSimilarFamilies && usedCardFamilies.has(family)) {
+        continue;
+      }
+
+      const rule = Math.random() > 0.5 ? 'A' : 'B';
+      const potentialCard: CriteriaCard = { ...cardDef, successRule: rule, testResult: null };
+
+      // Ensure the card is valid for the target solution
+      if (!validateCriteria(targetSolution, potentialCard)) {
+        potentialCard.successRule = rule === 'A' ? 'B' : 'A';
+        if (!validateCriteria(targetSolution, potentialCard)) {
+          continue;
+        }
+      }
+
+      // Check if adding the card is useful
+      const nextRemaining = remainingCombinations.filter(combo => validateCriteria(combo, potentialCard));
+      if (nextRemaining.length === 0) {
+        continue;
+      }
+
+      // For harder difficulties, prefer cards with better information value
+      if (settings.preferHighInfo && currentCards.length > 2) {
+        const infoValue = calculateCardInformationValue(potentialCard, remainingCombinations);
+        // Skip cards with very low information value (< 0.05) for hard/expert, but be less strict
+        if (infoValue < 0.05 && Math.random() > 0.3) {
+          continue;
+        }
+      }
+
+      currentCards.push(potentialCard);
+      if (!settings.allowSimilarFamilies) {
+        usedCardFamilies.add(family);
+      }
+      remainingCombinations = nextRemaining;
+    }
+
+    // Check for unique solution
+    if (currentCards.length === settings.cardCount && remainingCombinations.length === 1) {
+      if (
+        remainingCombinations[0].saphir === targetSolution.saphir &&
+        remainingCombinations[0].topaze === targetSolution.topaze &&
+        remainingCombinations[0].amethyst === targetSolution.amethyst
+      ) {
+        // Calculate difficulty score and validate it's in the correct range
+        const difficultyScore = calculatePuzzleComplexity(currentCards, targetSolution, difficulty);
+
+        if (isScoreInDifficultyRange(difficultyScore, difficulty)) {
+          console.log(`Generated ${difficulty} puzzle in ${attempts} attempts with ${settings.cardCount} cards. Score: ${difficultyScore}`);
+          return { cards: currentCards, solution: targetSolution, difficultyScore };
+        } else {
+          console.log(`Generated puzzle with score ${difficultyScore} doesn't match ${difficulty} difficulty range. Retrying...`);
+          continue; // Try again with a different puzzle
+        }
+      }
+    }
+  }
+
+  console.warn(`Failed to generate ${difficulty} puzzle with ${settings.cardCount} cards. Trying with fewer cards.`);
+
+  // Try with one fewer card for hard/expert difficulties
+  if (difficulty === 'hard' || difficulty === 'expert') {
+    const fallbackSettings = { ...settings, cardCount: settings.cardCount - 1, maxAttempts: 500 };
+
+    let fallbackAttempts = 0;
+    while (fallbackAttempts < fallbackSettings.maxAttempts) {
+      fallbackAttempts++;
+      const targetSolution = allCombinations[Math.floor(Math.random() * allCombinations.length)];
+
+      const currentCards: CriteriaCard[] = [];
+      const usedCardFamilies = new Set<string>();
+      let remainingCombinations = [...allCombinations];
+
+      const shuffledPossibleCards = [...allPossibleCards].sort(() => Math.random() - 0.5);
+
+      for (const cardDef of shuffledPossibleCards) {
+        if (currentCards.length >= fallbackSettings.cardCount) break;
+
+        const family = getCardFamily(cardDef.id);
+        if (!fallbackSettings.allowSimilarFamilies && usedCardFamilies.has(family)) {
+          continue;
+        }
+
+        const rule = Math.random() > 0.5 ? 'A' : 'B';
+        const potentialCard: CriteriaCard = { ...cardDef, successRule: rule, testResult: null };
+
+        if (!validateCriteria(targetSolution, potentialCard)) {
+          potentialCard.successRule = rule === 'A' ? 'B' : 'A';
+          if (!validateCriteria(targetSolution, potentialCard)) {
+            continue;
+          }
+        }
+
+        const nextRemaining = remainingCombinations.filter(combo => validateCriteria(combo, potentialCard));
+        if (nextRemaining.length === 0) {
+          continue;
+        }
+
+        currentCards.push(potentialCard);
+        if (!fallbackSettings.allowSimilarFamilies) {
+          usedCardFamilies.add(family);
+        }
+        remainingCombinations = nextRemaining;
+      }
+
+      if (currentCards.length === fallbackSettings.cardCount && remainingCombinations.length === 1) {
+        if (
+          remainingCombinations[0].saphir === targetSolution.saphir &&
+          remainingCombinations[0].topaze === targetSolution.topaze &&
+          remainingCombinations[0].amethyst === targetSolution.amethyst
+        ) {
+          // Calculate difficulty score and validate it's in the correct range
+          const difficultyScore = calculatePuzzleComplexity(currentCards, targetSolution, difficulty);
+
+          if (isScoreInDifficultyRange(difficultyScore, difficulty)) {
+            console.log(`Generated ${difficulty} puzzle with ${fallbackSettings.cardCount} cards (fallback). Score: ${difficultyScore}`);
+            return { cards: currentCards, solution: targetSolution, difficultyScore };
+          } else {
+            console.log(`Fallback puzzle with score ${difficultyScore} doesn't match ${difficulty} difficulty range. Retrying...`);
+            continue; // Try again with a different puzzle
+          }
+        }
+      }
+    }
+  }
+
+  // Final fallback to medium difficulty
+  if (difficulty !== 'medium') {
+    return generatePuzzleWithDifficulty('medium');
+  }
+
+  // Ultimate fallback
+  const ultimateFailsafeCards = generateFailsafeSet();
+  const ultimateFailsafeSolution: Combination = { saphir: 1, topaze: 2, amethyst: 3 };
+  const difficultyScore = calculatePuzzleComplexity(ultimateFailsafeCards, ultimateFailsafeSolution, 'medium');
+  return {
+    cards: ultimateFailsafeCards,
+    solution: ultimateFailsafeSolution,
+    difficultyScore,
+  };
 }
