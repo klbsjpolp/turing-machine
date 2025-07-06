@@ -36,44 +36,66 @@ Ce projet implémente une version solo numérique du jeu de déduction « Turing
 - **Déroulement** : 7 manches maximum. À chaque manche, le joueur peut mener **jusqu'à 3 analyses** (il n'est pas obligé de toutes les utiliser). Après chaque test, la machine affiche ✓ ou ✗ et consigne le résultat.
 - **Objectif** : Déduire la combinaison ET la règle de succès de chaque carte avant la fin de la 7e manche.
 
-### Liste des Cartes Critères (48 Vérificateurs)
+### Liste des Cartes Critères (plus de 60 vérificateurs)
 
-Pour garantir une grande rejouabilité, la machine sélectionne ses critères parmi les catégories suivantes :
+Pour garantir une grande rejouabilité, la machine sélectionne ses critères parmi les catégories suivantes :
 
-**Catégorie A : Conditions de Valeur (15 cartes)**
+**Catégorie A : Conditions de Valeur (24 cartes)**
 - `[Couleur]` est PAIR / IMPAIR (3 cartes)
-- `[Couleur]` est < 3 / ≥ 3 (3 cartes)
-- `[Couleur]` est > 3 / ≤ 3 (3 cartes)
-- `[Couleur]` est = 1 / ≠ 1 (3 cartes)
-- `[Couleur]` est = 3 / ≠ 3 (3 cartes)
+- `[Couleur]` < 3 / ≥ 3 (3 cartes)
+- `[Couleur]` > 3 / ≤ 3 (3 cartes)
+- `[Couleur]` = 1 / ≠ 1 (3 cartes)
+- `[Couleur]` = 2 / ≠ 2 (3 cartes)
+- `[Couleur]` = 3 / ≠ 3 (3 cartes)
+- `[Couleur]` = 4 / ≠ 4 (3 cartes)
+- `[Couleur]` = 5 / ≠ 5 (3 cartes)
 
-**Catégorie B : Comparaisons entre Couleurs (12 cartes)**
-- `Saphir` > `Topaze` / `Saphir` ≤ `Topaze` (et permutations, 3 cartes)
-- `Saphir` = `Topaze` / `Saphir` ≠ `Topaze` (et permutations, 3 cartes)
-- Le plus petit chiffre est `[Couleur]` / N'est pas `[Couleur]` (3 cartes)
-- Le plus grand chiffre est `[Couleur]` / N'est pas `[Couleur]` (3 cartes)
+**Catégorie B : Comparaisons entre Couleurs (18 cartes)**
+- `[Couleur1]` > `[Couleur2]` / ≤ (6 cartes, toutes permutations)
+- `[Couleur1]` = `[Couleur2]` / ≠ (6 cartes, toutes permutations)
+- Le plus petit chiffre est `[Couleur]` / n'est pas `[Couleur]` (3 cartes)
+- Le plus grand chiffre est `[Couleur]` / n'est pas `[Couleur]` (3 cartes)
 
-**Catégorie C : Conditions sur l'Ensemble du Code (12 cartes)**
-- La somme des chiffres est > 8 / ≤ 8
-- Le nombre de chiffres pairs est = 1 / ≠ 1
-- Le nombre de chiffres impairs est > 1 / ≤ 1
-- Tous les chiffres sont uniques / Au moins deux sont identiques
-- Exactement deux chiffres sont égaux / (Tous uniques ou tous identiques)
-- Tous les chiffres sont < 4 / Au moins un chiffre est ≥ 4
-- Les chiffres sont en ordre croissant strict (`S`<`T`<`A`) / Ne le sont pas
-- Les chiffres sont en ordre décroissant strict (`S`>`T`>`A`) / Ne le sont pas
-- La somme des chiffres est paire / impaire
-- Le produit des chiffres est > 20 / ≤ 20
+**Catégorie C : Conditions sur l'Ensemble du Code (19 cartes)**
+- Somme > 8 / ≤ 8
+- Somme > 6 / ≤ 6
+- Somme > 12 / ≤ 12
+- Nombre de chiffres pairs = 0 / ≠ 0
+- Nombre de chiffres pairs = 1 / ≠ 1
+- Nombre de chiffres pairs > 1 / ≤ 1
+- Nombre de chiffres impairs = 0 / ≠ 0
+- Nombre de chiffres impairs = 1 / ≠ 1
+- Nombre de chiffres impairs > 1 / ≤ 1
+- Tous les chiffres sont uniques / au moins deux identiques
+- Exactement deux chiffres égaux / tous uniques ou tous identiques
+- Tous < 4 / au moins un ≥ 4
+- Tous > 2 / au moins un ≤ 2
+- Ordre strictement croissant (`S`<`T`<`A`) / non croissant
+- Ordre strictement décroissant (`S`>`T`>`A`) / non décroissant
+- Somme paire / impaire
+- Produit > 15 / ≤ 15
+- Produit > 20 / ≤ 20
+- Produit > 35 / ≤ 35
 
-**Catégorie D : Conditions Logiques et Complexes (9 cartes)**
-- (`Saphir` est PAIR) OU (`Topaze` est PAIR) / (`Saphir` est IMPAIR) ET (`Topaze` est IMPAIR)
-- (`Saphir` > 3) OU (`Améthyste` > 3) / (`Saphir` ≤ 3) ET (`Améthyste` ≤ 3)
-- Le chiffre du milieu (ni min, ni max) est PAIR / IMPAIR
-- La somme (`Saphir` + `Topaze`) > `Améthyste` / ≤ `Améthyste`
-- L'écart entre le max et le min est > 2 / ≤ 2
-- Au moins un chiffre = 2 / Aucun chiffre = 2
-- Au moins un chiffre = 4 / Aucun chiffre = 4
-- Le nombre de chiffres > 3 est égal au nombre de chiffres < 3 / N'est pas égal
+**Catégorie D : Conditions Logiques et Complexes (19 cartes)**
+- (`Saphir` est PAIR) OU (`Topaze` est PAIR) / les deux impairs
+- (`Topaze` est PAIR) OU (`Améthyste` est PAIR) / les deux impairs
+- (`Saphir` est PAIR) OU (`Améthyste` est PAIR) / les deux impairs
+- (`Saphir` > 3) OU (`Topaze` > 3) / les deux ≤ 3
+- (`Topaze` > 3) OU (`Améthyste` > 3) / les deux ≤ 3
+- (`Saphir` > 3) OU (`Améthyste` > 3) / les deux ≤ 3
+- Le chiffre du milieu (ni min, ni max) est PAIR / IMPAIR ou pas de milieu
+- Début (Saphir) ET fin (Améthyste) sont PAIRS / au moins un ne l'est pas
+- Saphir + Topaze > Améthyste / ≤ Améthyste
+- Topaze + Améthyste > Saphir / ≤ Saphir
+- Saphir + Améthyste > Topaze / ≤ Topaze
+- Max - min > 2 / ≤ 2
+- Au moins un chiffre = 1 / aucun 1
+- Au moins un chiffre = 2 / aucun 2
+- Au moins un chiffre = 3 / aucun 3
+- Au moins un chiffre = 4 / aucun 4
+- Au moins un chiffre = 5 / aucun 5
+- Nombre de chiffres > 3 = nombre de chiffres < 3 / n'est pas égal
 
 ## Logique de Validation
 
@@ -109,4 +131,4 @@ L'interface est éclairée par des sources de lumière virtuelles qui créent de
 ## Succès et Fin de Partie
 - **Victoire** : Le joueur trouve la combinaison.
 - **Surcharge** : Échec après 7 manches.
-- **Abandon** : L'arrêt d’urgence met fin à la partie et révèle la Combinaison Maîtresse ainsi que les règles secrètes (✓) de chaque carte.
+- **Abandon** : L'arrêt d'urgence met fin à la partie et révèle la Combinaison Maîtresse ainsi que les règles secrètes (✓) de chaque carte.

@@ -19,7 +19,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir is ODD',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-parity-saphir'
           };
 
           const cardOdd: CriteriaCard = { ...cardEven, successRule: 'B' };
@@ -41,7 +42,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Topaze is ODD',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-parity-topaze'
           };
 
           expect(validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, cardEven)).toBe(true);
@@ -56,7 +58,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Amethyst is ODD',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-parity-amethyst'
           };
 
           expect(validateCriteria({ saphir: 1, topaze: 1, amethyst: 2 }, cardEven)).toBe(true);
@@ -73,7 +76,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir ≥ 3',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-threshold-saphir-lt3'
           };
 
           expect(validateCriteria({ saphir: 1, topaze: 1, amethyst: 1 }, card)).toBe(true);
@@ -90,7 +94,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir ≤ 3',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-threshold-saphir-gt3'
           };
 
           expect(validateCriteria({ saphir: 4, topaze: 1, amethyst: 1 }, card)).toBe(true);
@@ -109,7 +114,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir ≠ 1',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-equality-saphir-1'
           };
 
           expect(validateCriteria({ saphir: 1, topaze: 1, amethyst: 1 }, card)).toBe(true);
@@ -124,7 +130,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Topaze ≠ 3',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-equality-topaze-3'
           };
 
           expect(validateCriteria({ saphir: 1, topaze: 3, amethyst: 1 }, card)).toBe(true);
@@ -143,7 +150,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir ≤ Topaze',
             category: 'comparison',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'B-compare-gt-saphir-topaze'
           };
 
           expect(validateCriteria({ saphir: 3, topaze: 2, amethyst: 1 }, card)).toBe(true);
@@ -159,7 +167,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Topaze ≤ Amethyst',
             category: 'comparison',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'B-compare-gt-topaze-amethyst'
           };
 
           expect(validateCriteria({ saphir: 1, topaze: 3, amethyst: 2 }, card)).toBe(true);
@@ -176,7 +185,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir ≠ Topaze',
             category: 'comparison',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'B-compare-eq-saphir-topaze'
           };
 
           expect(validateCriteria({ saphir: 2, topaze: 2, amethyst: 1 }, card)).toBe(true);
@@ -193,7 +203,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Smallest is not Saphir',
             category: 'comparison',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'B-smallest-is-saphir'
           };
 
           expect(validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, card)).toBe(true);
@@ -209,7 +220,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Largest is not Amethyst',
             category: 'comparison',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'B-largest-is-amethyst'
           };
 
           expect(validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, card)).toBe(true);
@@ -227,7 +239,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Sum ≤ 8',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-sum-gt8'
         };
 
         expect(validateCriteria({ saphir: 3, topaze: 3, amethyst: 3 }, card)).toBe(true); // 9 > 8
@@ -243,7 +256,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Not one pair',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-pairs-eq1'
         };
 
         expect(validateCriteria({ saphir: 2, topaze: 1, amethyst: 3 }, card)).toBe(true); // one even (2)
@@ -259,7 +273,8 @@ describe('criteriaLogic', () => {
           ruleB: 'One or zero odds',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-odds-gt1'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 3, amethyst: 2 }, card)).toBe(true); // two odds
@@ -276,7 +291,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Not all unique',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-all-unique'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, card)).toBe(true);
@@ -292,7 +308,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Not exactly two equal',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-exactly-two-equal'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 1, amethyst: 3 }, card)).toBe(true);
@@ -308,7 +325,8 @@ describe('criteriaLogic', () => {
           ruleB: 'At least one ≥ 4',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-all-lt4'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, card)).toBe(true);
@@ -324,7 +342,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Not strictly increasing',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-strictly-increasing'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, card)).toBe(true);
@@ -341,7 +360,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Not strictly decreasing',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-strictly-decreasing'
         };
 
         expect(validateCriteria({ saphir: 3, topaze: 2, amethyst: 1 }, card)).toBe(true);
@@ -357,7 +377,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Sum is odd',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-sum-is-even'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 1, amethyst: 2 }, card)).toBe(true); // 4
@@ -374,7 +395,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Product ≤ 20',
           category: 'global',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'C-product-gt20'
         };
 
         expect(validateCriteria({ saphir: 3, topaze: 4, amethyst: 2 }, card)).toBe(true); // 24 > 20
@@ -393,7 +415,8 @@ describe('criteriaLogic', () => {
           ruleB: 'S odd AND T odd',
           category: 'composite',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'D-or-pair-ST'
         };
 
         expect(validateCriteria({ saphir: 2, topaze: 1, amethyst: 3 }, card)).toBe(true); // S even
@@ -410,7 +433,8 @@ describe('criteriaLogic', () => {
           ruleB: 'S ≤ 3 AND A ≤ 3',
           category: 'composite',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'D-or-gt3-SA'
         };
 
         expect(validateCriteria({ saphir: 4, topaze: 1, amethyst: 2 }, card)).toBe(true); // S > 3
@@ -427,7 +451,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Middle is odd or no middle',
           category: 'composite',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'D-middle-is-even'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, card)).toBe(true); // middle = 2
@@ -444,7 +469,8 @@ describe('criteriaLogic', () => {
           ruleB: 'S + T ≤ A',
           category: 'composite',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'D-sum-ST-gt-A'
         };
 
         expect(validateCriteria({ saphir: 3, topaze: 2, amethyst: 4 }, card)).toBe(true); // 5 > 4
@@ -461,7 +487,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Max - Min ≤ 2',
           category: 'composite',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'D-range-gt2'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 3, amethyst: 5 }, card)).toBe(true); // 5-1 = 4 > 2
@@ -478,7 +505,8 @@ describe('criteriaLogic', () => {
           ruleB: 'No 2',
           category: 'composite',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'D-at-least-one-2'
         };
 
         expect(validateCriteria({ saphir: 2, topaze: 1, amethyst: 3 }, card)).toBe(true);
@@ -496,7 +524,8 @@ describe('criteriaLogic', () => {
           ruleB: 'No 4',
           category: 'composite',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'D-at-least-one-4'
         };
 
         expect(validateCriteria({ saphir: 4, topaze: 1, amethyst: 3 }, card)).toBe(true);
@@ -513,7 +542,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Count >3 ≠ Count <3',
           category: 'composite',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'D-count-gt3-eq-lt3'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 4, amethyst: 3 }, card)).toBe(true); // 1 > 3, 1 < 3
@@ -532,7 +562,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Saphir is ODD',
           category: 'single',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'A-parity-saphir'
         };
 
         const cardB: CriteriaCard = { ...cardA, successRule: 'B' };
@@ -553,7 +584,8 @@ describe('criteriaLogic', () => {
           ruleB: 'Unknown',
           category: 'single',
           successRule: 'A',
-          testResult: null
+          testResult: null,
+          family: 'unknown'
         };
 
         expect(validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, card)).toBe(false);
@@ -641,7 +673,8 @@ describe('criteriaLogic', () => {
         ruleB: 'Sum ≤ 8',
         category: 'global',
         successRule: 'A',
-        testResult: null
+        testResult: null,
+        family: 'C-sum-gt8'
       };
 
       expect(validateCriteria(combination, card)).toBe(false); // sum = 3 ≤ 8
@@ -657,7 +690,8 @@ describe('criteriaLogic', () => {
         ruleB: 'Sum ≤ 8',
         category: 'global',
         successRule: 'A',
-        testResult: null
+        testResult: null,
+        family: 'C-sum-gt8'
       };
 
       expect(validateCriteria(combination, card)).toBe(true); // sum = 15 > 8
@@ -671,7 +705,8 @@ describe('criteriaLogic', () => {
         ruleB: 'Saphir ≤ 3',
         category: 'single',
         successRule: 'A',
-        testResult: null
+        testResult: null,
+        family: 'A-threshold-saphir-gt3'
       };
 
       expect(validateCriteria({ saphir: 3, topaze: 1, amethyst: 1 }, card)).toBe(false); // exactly 3
@@ -690,7 +725,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir est IMPAIR',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-parity-saphir'
           },
           {
             id: 'B_compare_gt_saphir_topaze',
@@ -699,7 +735,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir ≤ Topaze',
             category: 'comparison',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'B-compare-gt-saphir-topaze'
           },
           {
             id: 'C_sum_gt8',
@@ -708,11 +745,11 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir + Topaze + Améthyste ≤ 8',
             category: 'global',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'C-sum-gt8'
           }
         ];
 
-        const mockSolution: Combination = { saphir: 4, topaze: 2, amethyst: 3 };
         const complexity = calculatePuzzleComplexity(mockCards);
 
         expect(typeof complexity).toBe('number');
@@ -729,7 +766,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir ≠ 1',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-equality-saphir-1'
           },
           {
             id: 'A_equality_topaze_1',
@@ -738,7 +776,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Topaze ≠ 1',
             category: 'single',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'A-equality-topaze-1'
           }
         ];
 
@@ -750,7 +789,8 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir + Topaze + Améthyste ≤ 8',
             category: 'global',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'C-sum-gt8'
           },
           {
             id: 'D_or_pair_ST',
@@ -759,11 +799,10 @@ describe('criteriaLogic', () => {
             ruleB: 'Saphir et Topaze sont IMPAIRS',
             category: 'composite',
             successRule: 'A',
-            testResult: null
+            testResult: null,
+            family: 'D-or-pair-ST'
           }
         ];
-
-        const solution: Combination = { saphir: 2, topaze: 3, amethyst: 4 };
 
         const simpleComplexity = calculatePuzzleComplexity(simpleCards);
         const complexComplexity = calculatePuzzleComplexity(complexCards);
@@ -775,7 +814,6 @@ describe('criteriaLogic', () => {
 
       it('should handle edge cases gracefully', () => {
         const emptyCards: CriteriaCard[] = [];
-        const solution: Combination = { saphir: 1, topaze: 1, amethyst: 1 };
 
         const complexity = calculatePuzzleComplexity(emptyCards);
         expect(typeof complexity).toBe('number');

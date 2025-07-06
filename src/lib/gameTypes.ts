@@ -15,6 +15,7 @@ export interface CriteriaCard {
   ruleA: string;
   ruleB: string;
   category: 'single' | 'comparison' | 'global' | 'composite';
+  family: string;
   successRule: 'A' | 'B'; // Which rule triggers success (hidden from player)
   testResult: TestResult;
 }

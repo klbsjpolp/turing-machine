@@ -6,10 +6,10 @@ export function initializeGame(difficulty: Difficulty = 'expert'): GameState {
 
   // Adjust game parameters based on difficulty
   const difficultyParams = {
-    easy: { maxRounds: 5, maxTestsPerRound: 4 },
+    easy: { maxRounds: 7, maxTestsPerRound: 3 },
     medium: { maxRounds: 7, maxTestsPerRound: 3 },
-    hard: { maxRounds: 8, maxTestsPerRound: 3 },
-    expert: { maxRounds: 10, maxTestsPerRound: 3 }
+    hard: { maxRounds: 7, maxTestsPerRound: 3 },
+    expert: { maxRounds: 7, maxTestsPerRound: 3 }
   };
 
   const params = difficultyParams[difficulty];
