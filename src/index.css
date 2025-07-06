@@ -649,4 +649,64 @@ layer(base);
   .toggle-impossible-btn[disabled] {
     @apply opacity-50 cursor-not-allowed shadow-none;
   }
+
+  .test-history-grid-container {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  .test-history-grid {
+    display: grid;
+    width: max-content;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: none;
+    align-items: stretch;
+  }
+  .test-history-corner {
+    background: transparent;
+  }
+  .test-history-card-header {
+    padding: 0.5rem 0.25rem 0.5rem 0.25rem;
+    background: var(--color-steampunk-paper-light);
+    border-bottom: 2px dashed #bfa66b;
+    border-right: 1px solid #e0d3b0;
+    text-align: center;
+    vertical-align: bottom;
+    max-width: 120px;
+    position: relative;
+  }
+  .vertical-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: bold;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: #a16640;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .test-history-round-label {
+    @apply flex items-center justify-center bg-steampunk-paper-light text-center;
+    font-family: 'Courier New', Courier, monospace;
+    padding-inline: 0.5rem;
+    border-bottom: 1px solid #e0d3b0;
+    border-right: 2px dashed #bfa66b;
+  }
+  .test-history-cell {
+    @apply flex items-center justify-center min-w-10 min-h-10 text-lg bg-steampunk-paper-light;
+    border-bottom: 1px solid #e0d3b0;
+    border-right: 1px solid #e0d3b0;
+    svg {
+      display: block;
+    }
+    &:last-child {
+      border-right: none;
+    }
+    & > *:last-child {
+      border-bottom: none;
+    }
+  }
 }
