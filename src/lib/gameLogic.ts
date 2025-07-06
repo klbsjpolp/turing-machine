@@ -1,5 +1,5 @@
 import { GameState, Combination, TestSchema, TestResult, Difficulty } from './gameTypes';
-import { generateUniqueSolutionSet, generatePuzzleWithDifficulty, validateCriteria } from './criteriaLogic';
+import { generatePuzzleWithDifficulty, validateCriteria } from './criteriaLogic';
 
 export function initializeGame(difficulty: Difficulty = 'expert'): GameState {
   const { cards, solution, difficultyScore } = generatePuzzleWithDifficulty(difficulty);

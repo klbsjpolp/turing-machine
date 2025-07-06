@@ -713,7 +713,7 @@ describe('criteriaLogic', () => {
         ];
 
         const mockSolution: Combination = { saphir: 4, topaze: 2, amethyst: 3 };
-        const complexity = calculatePuzzleComplexity(mockCards, mockSolution);
+        const complexity = calculatePuzzleComplexity(mockCards);
 
         expect(typeof complexity).toBe('number');
         expect(complexity).toBeGreaterThanOrEqual(0);
@@ -765,8 +765,8 @@ describe('criteriaLogic', () => {
 
         const solution: Combination = { saphir: 2, topaze: 3, amethyst: 4 };
 
-        const simpleComplexity = calculatePuzzleComplexity(simpleCards, solution);
-        const complexComplexity = calculatePuzzleComplexity(complexCards, solution);
+        const simpleComplexity = calculatePuzzleComplexity(simpleCards);
+        const complexComplexity = calculatePuzzleComplexity(complexCards);
 
         expect(typeof simpleComplexity).toBe('number');
         expect(typeof complexComplexity).toBe('number');
@@ -777,7 +777,7 @@ describe('criteriaLogic', () => {
         const emptyCards: CriteriaCard[] = [];
         const solution: Combination = { saphir: 1, topaze: 1, amethyst: 1 };
 
-        const complexity = calculatePuzzleComplexity(emptyCards, solution);
+        const complexity = calculatePuzzleComplexity(emptyCards);
         expect(typeof complexity).toBe('number');
         expect(complexity).toBeGreaterThanOrEqual(0);
         expect(complexity).toBeLessThanOrEqual(100);
@@ -786,8 +786,6 @@ describe('criteriaLogic', () => {
 
     describe('generatePuzzleWithDifficulty', () => {
       it('should generate puzzles with difficulty scores for all levels', () => {
-        const difficulties = ['easy', 'medium', 'hard', 'expert'] as const;
-
         const easy = generatePuzzleWithDifficulty('easy');
         const medium = generatePuzzleWithDifficulty('medium');
         const hard = generatePuzzleWithDifficulty('hard');

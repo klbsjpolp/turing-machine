@@ -79,21 +79,21 @@ export const ColorPanel: React.FC<ColorPanelProps> = ({
               <button
                 ref={el => digitRefs.current[digit - 1] = el}
                 disabled={disabled || isImpossible}
-                className={`digit-selector ${isSelected ? 'selected' : ''} ${isAnimating ? 'animating' : ''} ${isImpossible ? 'impossible' : ''}`}
+                className={`digit-selector ${isSelected ? 'selected' : ''} ${isAnimating ? 'animating' : ''} ${isImpossible ? '' : 'possible'}`}
                 onClick={() => handleDigitClick(digit)}
                 title={isImpossible ? "Chiffre marqué comme impossible" : undefined}
               >
-                <span className="digit-value">{digit}</span>
+                <span className="digit-value"><div className="styled-x"></div>{digit}</span>
                 <div className="digit-rail"></div>
               </button>
-                <button
-                  type="button"
-                  className={`toggle-impossible-btn text-red-700 bg-red-100 rounded-full mt-1 w-5 h-5 flex items-center justify-center text-xs border ${isImpossible ? 'border-red-700' : 'border-red-200 opacity-50'}`}
-                  aria-label="Marquer comme impossible"
-                  onClick={() => onToggleImpossible && onToggleImpossible(color, digit as Digit)}
-                >
-                  ✗
-                </button>
+              <button
+                type="button"
+                className={`toggle-impossible-btn text-red-700 bg-red-100 rounded-full mt-1 w-5 h-5 flex items-center justify-center text-xs border ${isImpossible ? 'border-red-700' : 'border-red-200 opacity-50'}`}
+                aria-label="Marquer comme impossible"
+                onClick={() => onToggleImpossible && onToggleImpossible(color, digit as Digit)}
+              >
+                ✗
+              </button>
             </div>
           );
         })}

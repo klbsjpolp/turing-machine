@@ -287,6 +287,12 @@ layer(base);
       bg-amber-900/40 rounded z-0;
     }
 
+    .styled-x {
+      @apply absolute w-8 h-8 cursor-pointer opacity-80 in-[.possible]:hidden
+      after:absolute  after:left-1/2  after:top-1/2  after:bg-steampunk-bronze  after:rounded-xs  after:origin-center  after:w-[180%]  after:h-[3px]  after:-translate-1/2  after:-rotate-45
+      before:absolute before:left-1/2 before:top-1/2 before:bg-steampunk-bronze before:rounded-xs before:origin-center before:w-[180%] before:h-[3px] before:-translate-1/2 before:rotate-45;
+    }
+
     &.selected {
       .digit-value {
         @apply text-amber-50 bg-amber-900 shadow-[0_0_10px_rgba(180,83,9,0.5)]

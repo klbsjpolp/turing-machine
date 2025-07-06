@@ -1,4 +1,4 @@
-import { Combination, CriteriaCard, Digit, Difficulty } from './gameTypes';
+import {Combination, CriteriaCard, Difficulty, Digit} from './gameTypes';
 
 // --- Helpers --- //
 
@@ -243,7 +243,7 @@ export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: 
         remainingCombinations[0].amethyst === targetSolution.amethyst
       ) {
         console.log(`Generated a unique solution in ${attempts} attempts with 5 cards.`);
-        const difficultyScore = calculatePuzzleComplexity(currentCards, targetSolution, 'medium');
+        const difficultyScore = calculatePuzzleComplexity(currentCards);
         return { cards: currentCards, solution: targetSolution, difficultyScore };
       }
     }
@@ -252,7 +252,7 @@ export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: 
   console.error("Failed to generate a unique solution set with 5 cards. Falling back to a failsafe puzzle.");
   const failsafeCards = generateFailsafeSet();
   const failsafeSolution: Combination = { saphir: 1, topaze: 2, amethyst: 3 };
-  const difficultyScore = calculatePuzzleComplexity(failsafeCards, failsafeSolution, 'medium');
+  const difficultyScore = calculatePuzzleComplexity(failsafeCards);
   return {
     cards: failsafeCards,
     solution: failsafeSolution,
@@ -279,8 +279,7 @@ function calculateCardInformationValue(card: CriteriaCard, remainingCombinations
 
   // Information value is higher when the card splits the solution space more evenly
   // This is based on information theory - maximum information when split is 50/50
-  const ratio = Math.min(satisfying.length, notSatisfying) / remainingCombinations.length;
-  return ratio;
+  return Math.min(satisfying.length, notSatisfying) / remainingCombinations.length;
 }
 
 /**
@@ -301,7 +300,7 @@ function isScoreInDifficultyRange(score: number, difficulty: Difficulty): boolea
 /**
  * Calculates the overall complexity score of a puzzle with difficulty-specific ranges
  */
-export function calculatePuzzleComplexity(cards: CriteriaCard[], solution: Combination, difficulty?: Difficulty): number {
+export function calculatePuzzleComplexity(cards: CriteriaCard[]): number {
   // Handle edge case of no cards
   if (cards.length === 0) {
     return 0;
@@ -428,14 +427,14 @@ export function generatePuzzleWithDifficulty(difficulty: Difficulty = 'medium'):
         remainingCombinations[0].amethyst === targetSolution.amethyst
       ) {
         // Calculate difficulty score and validate it's in the correct range
-        const difficultyScore = calculatePuzzleComplexity(currentCards, targetSolution, difficulty);
+        const difficultyScore = calculatePuzzleComplexity(currentCards);
 
         if (isScoreInDifficultyRange(difficultyScore, difficulty)) {
           console.log(`Generated ${difficulty} puzzle in ${attempts} attempts with ${settings.cardCount} cards. Score: ${difficultyScore}`);
           return { cards: currentCards, solution: targetSolution, difficultyScore };
         } else {
           console.log(`Generated puzzle with score ${difficultyScore} doesn't match ${difficulty} difficulty range. Retrying...`);
-          continue; // Try again with a different puzzle
+           // Try again with a different puzzle
         }
       }
     }
@@ -495,14 +494,14 @@ export function generatePuzzleWithDifficulty(difficulty: Difficulty = 'medium'):
           remainingCombinations[0].amethyst === targetSolution.amethyst
         ) {
           // Calculate difficulty score and validate it's in the correct range
-          const difficultyScore = calculatePuzzleComplexity(currentCards, targetSolution, difficulty);
+          const difficultyScore = calculatePuzzleComplexity(currentCards);
 
           if (isScoreInDifficultyRange(difficultyScore, difficulty)) {
             console.log(`Generated ${difficulty} puzzle with ${fallbackSettings.cardCount} cards (fallback). Score: ${difficultyScore}`);
             return { cards: currentCards, solution: targetSolution, difficultyScore };
           } else {
             console.log(`Fallback puzzle with score ${difficultyScore} doesn't match ${difficulty} difficulty range. Retrying...`);
-            continue; // Try again with a different puzzle
+             // Try again with a different puzzle
           }
         }
       }
@@ -517,7 +516,7 @@ export function generatePuzzleWithDifficulty(difficulty: Difficulty = 'medium'):
   // Ultimate fallback
   const ultimateFailsafeCards = generateFailsafeSet();
   const ultimateFailsafeSolution: Combination = { saphir: 1, topaze: 2, amethyst: 3 };
-  const difficultyScore = calculatePuzzleComplexity(ultimateFailsafeCards, ultimateFailsafeSolution, 'medium');
+  const difficultyScore = calculatePuzzleComplexity(ultimateFailsafeCards);
   return {
     cards: ultimateFailsafeCards,
     solution: ultimateFailsafeSolution,
