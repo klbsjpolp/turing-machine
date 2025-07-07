@@ -270,7 +270,6 @@ export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: 
         remainingCombinations[0].amethyst === targetSolution.amethyst
       ) {
         const difficultyScore = calculatePuzzleComplexity(currentCards);
-        console.log(`Generated a unique solution in ${attempts} attempts with ${currentCards.length} cards for a score of ${difficultyScore}.`);
         return { cards: currentCards, solution: targetSolution, difficultyScore, attempts };
       }
     }
@@ -313,16 +312,16 @@ function calculateCardInformationValue(card: CriteriaCard, remainingCombinations
 /**
  * Checks if a difficulty score is within the expected range for a given difficulty level
  */
-function isScoreInDifficultyRange(score: number, difficulty: Difficulty): boolean {
-  const difficultyRanges = {
-    easy: { min: 0, max: 25 },
-    medium: { min: 25, max: 50 },
-    hard: { min: 50, max: 75 },
-    expert: { min: 75, max: 100 }
-  };
+export const difficultyRanges = {
+  easy: { min: 0, max: 50 },
+  medium: { min: 50, max: 65 },
+  hard: { min: 65, max: 80 },
+  expert: { min: 80, max: 100 }
+};
 
+function isScoreInDifficultyRange(score: number, difficulty: Difficulty): boolean {
   const range = difficultyRanges[difficulty];
-  return score >= range.min && score <= range.max;
+  return score >= range.min && score < range.max;
 }
 
 /**
@@ -335,44 +334,79 @@ export function calculatePuzzleComplexity(cards: CriteriaCard[]): number {
   }
 
   const allCombinations = getAllCombinations();
-  let complexityScore = 0;
+  let baseComplexityScore = 0;
 
-  // 1. Category weights - different types of criteria have different base complexity
+  // 1. Balanced category weights - different types of criteria have different base complexity
   const categoryWeights = {
-    'single': 1,
-    'comparison': 2, 
-    'global': 3,
-    'composite': 4
+    'single': 4,      // Increased from 2 to allow higher scores
+    'comparison': 6,  // Increased from 3
+    'global': 8,      // Increased from 4
+    'composite': 10   // Increased from 5
   };
 
-  // 2. Information distribution analysis
+  // 2. Information distribution analysis with moderate bonuses
   let totalInfoValue = 0;
-  let minInfoValue = 1;
   let remainingCombinations = [...allCombinations];
+  let informationReductionScore = 0;
 
-  cards.forEach(card => {
+  cards.forEach((card, index) => {
     const infoValue = calculateCardInformationValue(card, remainingCombinations);
     totalInfoValue += infoValue;
-    minInfoValue = Math.min(minInfoValue, infoValue);
-    complexityScore += categoryWeights[card.category] * infoValue * 10; // Scale up for readability
 
-    // Update remaining combinations for next card
+    // Base score from category and information value
+    const cardScore = categoryWeights[card.category] * (0.4 + infoValue * 1.0);
+    baseComplexityScore += cardScore;
+
+    // Track solution space reduction for additional scoring
+    const prevCount = remainingCombinations.length;
     remainingCombinations = remainingCombinations.filter(combo => validateCriteria(combo, card));
+    const reductionRatio = prevCount > 0 ? (prevCount - remainingCombinations.length) / prevCount : 0;
+    informationReductionScore += reductionRatio * 4; // Moderate bonus for effective filtering
   });
 
-  // 3. Bonus for balanced information distribution
+  // 3. Moderate balance bonus - rewards consistent information distribution
   const avgInfoValue = totalInfoValue / cards.length;
-  const balanceBonus = avgInfoValue > 0 ? minInfoValue / avgInfoValue : 1; // Prevent division by zero
+  const infoVariance = cards.reduce((variance, card) => {
+    const infoValue = calculateCardInformationValue(card, [...allCombinations]);
+    return variance + Math.pow(infoValue - avgInfoValue, 2);
+  }, 0) / cards.length;
+  const balanceBonus = 1 + (0.3 - Math.min(infoVariance, 0.3)) * 0.8; // 1.0 to 1.24 range
 
-  // 4. Family diversity bonus
+  // 4. Family diversity bonus - moderate impact
   const families = new Set(cards.map(card => card.family));
-  const diversityBonus = families.size / cards.length;
+  const diversityBonus = 1 + (families.size / cards.length) * 0.5; // 1.0 to 1.5 range
 
-  // 5. Card count factor
-  const cardCountFactor = Math.min(cards.length / 5, 1.5); // Normalize around 5 cards, cap at 1.5x
+  // 5. Card interaction complexity - moderate bonus
+  let interactionBonus = 1;
+  const categoryDistribution = cards.reduce((dist, card) => {
+    dist[card.category] = (dist[card.category] || 0) + 1;
+    return dist;
+  }, {} as Record<string, number>);
 
-  // Final score calculation
-  const finalScore = complexityScore * balanceBonus * diversityBonus * cardCountFactor;
+  const categoryCount = Object.keys(categoryDistribution).length;
+  if (categoryCount >= 3) {
+    interactionBonus += 0.2; // Moderate bonus
+  }
+  if (categoryCount === 4) {
+    interactionBonus += 0.15; // Additional bonus for all categories
+  }
+
+  // Final score calculation with balanced scaling
+  let finalScore = baseComplexityScore + informationReductionScore;
+  finalScore *= balanceBonus * diversityBonus * interactionBonus;
+
+  // Apply balanced scaling to distribute across 0-100 range
+  const maxExpectedScore = 90; // Reduced from 120 to increase scores
+  let scaledScore = (finalScore / maxExpectedScore) * 100;
+
+  // Apply gentle compression for very high scores to reduce perfect 100s
+  if (scaledScore > 95) {
+    // Apply mild compression for very high scores
+    const excess = scaledScore - 95;
+    scaledScore = 95 + (excess * 0.8); // Mild compression of top 5 points
+  }
+
+  finalScore = Math.min(scaledScore, 100);
 
   return Math.round(finalScore * 100) / 100; // Round to 2 decimal places
 }
