@@ -218,7 +218,7 @@ function getAllPossibleCards(): Omit<CriteriaCard, 'successRule' | 'testResult'>
  * Generates a set of criteria cards that guarantees a single unique solution.
  * This is the main function to call to create a new puzzle.
  */
-export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: Combination; difficultyScore: number } {
+export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: Combination; difficultyScore: number, attempts: number } {
   const allCombinations = getAllCombinations();
   const allPossibleCards = getAllPossibleCards();
   let attempts = 0;
@@ -269,9 +269,9 @@ export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: 
         remainingCombinations[0].topaze === targetSolution.topaze &&
         remainingCombinations[0].amethyst === targetSolution.amethyst
       ) {
-        console.log(`Generated a unique solution in ${attempts} attempts with 5 cards.`);
         const difficultyScore = calculatePuzzleComplexity(currentCards);
-        return { cards: currentCards, solution: targetSolution, difficultyScore };
+        console.log(`Generated a unique solution in ${attempts} attempts with ${currentCards.length} cards for a score of ${difficultyScore}.`);
+        return { cards: currentCards, solution: targetSolution, difficultyScore, attempts };
       }
     }
   }
@@ -284,6 +284,7 @@ export function generateUniqueSolutionSet(): { cards: CriteriaCard[]; solution: 
     cards: failsafeCards,
     solution: failsafeSolution,
     difficultyScore,
+    attempts
   };
 }
 
