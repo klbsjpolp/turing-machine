@@ -1,18 +1,11 @@
 import { GameState, Combination, TestSchema, TestResult, Difficulty } from './gameTypes';
-import { generatePuzzleWithDifficulty, validateCriteria } from './criteriaLogic';
+import {difficultyRanges, generatePuzzleWithDifficulty, validateCriteria} from './criteriaLogic';
+import { serializePuzzle } from './utils';
 
-export function initializeGame(difficulty: Difficulty = 'expert'): GameState {
+export function initializeGame(difficulty: Difficulty): GameState {
   const { cards, solution, difficultyScore } = generatePuzzleWithDifficulty(difficulty);
 
-  // Adjust game parameters based on difficulty
-  const difficultyParams = {
-    easy: { maxRounds: 7, maxTestsPerRound: 3 },
-    medium: { maxRounds: 7, maxTestsPerRound: 3 },
-    hard: { maxRounds: 7, maxTestsPerRound: 3 },
-    expert: { maxRounds: 7, maxTestsPerRound: 3 }
-  };
-
-  const params = difficultyParams[difficulty];
+  const params = difficultyRanges[difficulty];
 
   return {
     masterCombination: solution,
@@ -31,7 +24,8 @@ export function initializeGame(difficulty: Difficulty = 'expert'): GameState {
       saphir: new Set(),
       topaze: new Set(),
       amethyst: new Set()
-    }
+    },
+    serialization: serializePuzzle(solution, cards)
   };
 }
 

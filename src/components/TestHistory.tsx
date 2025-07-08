@@ -3,6 +3,7 @@ import { GameState, CriteriaCard, Combination, TestResult } from '@/lib/gameType
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { SequenceDisplay } from './SequenceDisplay';
+import {formatRuleWithColors} from "@/lib/formatRules.tsx";
 
 interface TestHistoryProps {
   history: GameState['testHistory'];
@@ -55,7 +56,7 @@ export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards
               <div className="test-history-corner"></div>
               {cardIds.map(cardId => (
                 <div key={cardId} className="test-history-card-header">
-                  <span className="vertical-text">{getCardName(cardId)}</span>
+                  <span className="vertical-text">{formatRuleWithColors(getCardName(cardId))}</span>
                 </div>
               ))}
               {rounds.map((round) => {

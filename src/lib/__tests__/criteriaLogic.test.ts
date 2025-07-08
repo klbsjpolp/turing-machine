@@ -3,9 +3,9 @@ import {
   validateCriteria,
   generateUniqueSolutionSet,
   calculatePuzzleComplexity,
-  generatePuzzleWithDifficulty
+  generatePuzzleWithDifficulty, difficultyRanges
 } from '../criteriaLogic';
-import { Combination, CriteriaCard } from '../gameTypes';
+import {Combination, CriteriaCard, Difficulty} from '../gameTypes';
 
 describe('criteriaLogic', () => {
   describe('validateCriteria', () => {
@@ -588,7 +588,7 @@ describe('criteriaLogic', () => {
           family: 'unknown'
         };
 
-        expect(validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, card)).toBe(false);
+        expect(() => validateCriteria({ saphir: 1, topaze: 2, amethyst: 3 }, card)).toThrow();
       });
     });
   });
@@ -838,14 +838,14 @@ describe('criteriaLogic', () => {
         });
 
         // Check difficulty-specific ranges
-        expect(easy.difficultyScore).toBeGreaterThanOrEqual(0);
-        expect(easy.difficultyScore).toBeLessThanOrEqual(25);
-        expect(medium.difficultyScore).toBeGreaterThanOrEqual(25);
-        expect(medium.difficultyScore).toBeLessThanOrEqual(50);
-        expect(hard.difficultyScore).toBeGreaterThanOrEqual(50);
-        expect(hard.difficultyScore).toBeLessThanOrEqual(75);
-        expect(expert.difficultyScore).toBeGreaterThanOrEqual(75);
-        expect(expert.difficultyScore).toBeLessThanOrEqual(100);
+        expect(easy.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.easy.min);
+        expect(easy.difficultyScore).toBeLessThanOrEqual(difficultyRanges.easy.max);
+        expect(medium.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.medium.min);
+        expect(medium.difficultyScore).toBeLessThanOrEqual(difficultyRanges.medium.max);
+        expect(hard.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.hard.min);
+        expect(hard.difficultyScore).toBeLessThanOrEqual(difficultyRanges.hard.max);
+        expect(expert.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.expert.min);
+        expect(expert.difficultyScore).toBeLessThanOrEqual(difficultyRanges.expert.max);
       });
 
       it('should generate valid puzzles that have unique solutions', () => {
@@ -863,12 +863,10 @@ describe('criteriaLogic', () => {
         const hard = generatePuzzleWithDifficulty('hard');
         const expert = generatePuzzleWithDifficulty('expert');
 
-        expect(easy.cards.length).toBe(4);
-        expect(medium.cards.length).toBe(5);
-        expect(hard.cards.length).toBeGreaterThanOrEqual(5);
-        expect(hard.cards.length).toBeLessThanOrEqual(6);
-        expect(expert.cards.length).toBeGreaterThanOrEqual(5);
-        expect(expert.cards.length).toBeLessThanOrEqual(7);
+        expect(easy.cards.length).toBe(difficultyRanges.easy.cardCount);
+        expect(medium.cards.length).toBe(difficultyRanges.medium.cardCount);
+        expect(hard.cards.length).toBe(difficultyRanges.hard.cardCount);
+        expect(expert.cards.length).toBe(difficultyRanges.expert.cardCount);
       });
 
       it('should generate consistent difficulty scores for multiple runs', () => {
@@ -883,8 +881,8 @@ describe('criteriaLogic', () => {
         // All scores should be valid and in medium difficulty range
         scores.forEach(score => {
           expect(typeof score).toBe('number');
-          expect(score).toBeGreaterThanOrEqual(25);
-          expect(score).toBeLessThanOrEqual(50);
+          expect(score).toBeGreaterThanOrEqual(difficultyRanges.medium.min);
+          expect(score).toBeLessThanOrEqual(difficultyRanges.medium.max);
         });
       });
 
@@ -893,23 +891,15 @@ describe('criteriaLogic', () => {
 
         expect(puzzle).toHaveProperty('difficultyScore');
         expect(typeof puzzle.difficultyScore).toBe('number');
-        expect(puzzle.difficultyScore).toBeGreaterThanOrEqual(50);
-        expect(puzzle.difficultyScore).toBeLessThanOrEqual(75);
+        expect(puzzle.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.hard.min);
+        expect(puzzle.difficultyScore).toBeLessThanOrEqual(difficultyRanges.hard.max);
       });
 
       it('should consistently generate puzzles that meet difficulty score requirements', () => {
-        // Test multiple generations to ensure consistency
-        const testCases = [
-          { difficulty: 'easy' as const, min: 0, max: 25 },
-          { difficulty: 'medium' as const, min: 25, max: 50 },
-          { difficulty: 'hard' as const, min: 50, max: 75 },
-          { difficulty: 'expert' as const, min: 75, max: 100 }
-        ];
-
-        testCases.forEach(({ difficulty, min, max }) => {
+        Object.entries(difficultyRanges).forEach(([difficulty, {min, max }]) => {
           // Generate multiple puzzles for each difficulty
           for (let i = 0; i < 3; i++) {
-            const puzzle = generatePuzzleWithDifficulty(difficulty);
+            const puzzle = generatePuzzleWithDifficulty(difficulty as Difficulty);
 
             expect(puzzle.difficultyScore).toBeGreaterThanOrEqual(min);
             expect(puzzle.difficultyScore).toBeLessThanOrEqual(max);

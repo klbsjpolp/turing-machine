@@ -6,7 +6,7 @@ console.log('Testing algorithms...');
 
 try {
   // Test game initialization
-  const game = initializeGame();
+  const game = initializeGame('medium');
   console.log('✓ Game initialization works');
   console.log('  - Master combination:', game.masterCombination);
   console.log('  - Number of criteria cards:', game.criteriaCards.length);

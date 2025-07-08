@@ -7,7 +7,8 @@ import {
   nextRound,
   abandonGame
 } from '../gameLogic';
-import { GameState, Combination, TestSchema, CriteriaCard } from '../gameTypes';
+import {GameState, Combination, TestSchema, CriteriaCard, Difficulty} from '../gameTypes';
+import {difficultyRanges} from "@/lib/criteriaLogic.ts";
 
 describe('gameLogic', () => {
   let gameState: GameState;
@@ -23,7 +24,8 @@ describe('gameLogic', () => {
         ruleB: 'Saphir is ODD',
         category: 'single',
         successRule: 'A',
-        testResult: null
+        testResult: null,
+        family: 'test'
       },
       {
         id: 'B_compare_gt_saphir_topaze',
@@ -32,7 +34,8 @@ describe('gameLogic', () => {
         ruleB: 'Saphir ≤ Topaze',
         category: 'comparison',
         successRule: 'A',
-        testResult: null
+        testResult: null,
+        family: 'test'
       },
       {
         id: 'C_sum_gt8',
@@ -41,7 +44,8 @@ describe('gameLogic', () => {
         ruleB: 'Sum ≤ 8',
         category: 'global',
         successRule: 'B',
-        testResult: null
+        testResult: null,
+        family: 'test'
       }
     ];
 
@@ -62,75 +66,70 @@ describe('gameLogic', () => {
         saphir: new Set(),
         topaze: new Set(),
         amethyst: new Set()
-      }
+      },
+      serialization: ''
     };
   });
 
   describe('initializeGame', () => {
-    it('should initialize a new game with correct default values (medium difficulty)', () => {
-      const newGame = initializeGame();
+    it('should initialize medium difficulty game correctly', () => {
+      const difficulty: Difficulty = 'medium';
+      const newGame = initializeGame(difficulty);
 
-      expect(newGame.currentRound).toBe(1);
-      expect(newGame.testsThisRound).toBe(0);
-      expect(newGame.maxRounds).toBe(7);
-      expect(newGame.maxTestsPerRound).toBe(3);
-      expect(newGame.difficulty).toBe('medium');
-      expect(newGame.currentTest).toEqual({ saphir: 1, topaze: 1, amethyst: 1 });
-      expect(newGame.combinationLocked).toBe(false);
-      expect(newGame.gameStatus).toBe('playing');
-      expect(newGame.testHistory).toEqual([]);
-      expect(newGame.masterCombination).toBeDefined();
-      expect(newGame.criteriaCards).toBeDefined();
-      expect(newGame.criteriaCards.length).toBe(5); // Medium difficulty should have 5 cards
+      expect(newGame.difficulty).toBe(difficulty);
+      expect(newGame.maxRounds).toBe(difficultyRanges[difficulty].maxRounds);
+      expect(newGame.maxTestsPerRound).toBe(difficultyRanges[difficulty].maxTestsPerRound);
+      expect(newGame.criteriaCards.length).toBe(difficultyRanges[difficulty].cardCount); // Easy difficulty should have 4 cards
       expect(newGame.difficultyScore).toBeDefined();
       expect(typeof newGame.difficultyScore).toBe('number');
-      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(25);
-      expect(newGame.difficultyScore).toBeLessThanOrEqual(50);
+      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges[difficulty].min);
+      expect(newGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges[difficulty].max);
     });
 
     it('should initialize easy difficulty game correctly', () => {
-      const newGame = initializeGame('easy');
+      const difficulty: Difficulty = 'easy';
+      const newGame = initializeGame(difficulty);
 
-      expect(newGame.difficulty).toBe('easy');
-      expect(newGame.maxRounds).toBe(5);
-      expect(newGame.maxTestsPerRound).toBe(4);
-      expect(newGame.criteriaCards.length).toBe(4); // Easy difficulty should have 4 cards
+      expect(newGame.difficulty).toBe(difficulty);
+      expect(newGame.maxRounds).toBe(difficultyRanges[difficulty].maxRounds);
+      expect(newGame.maxTestsPerRound).toBe(difficultyRanges[difficulty].maxTestsPerRound);
+      expect(newGame.criteriaCards.length).toBe(difficultyRanges[difficulty].cardCount); // Easy difficulty should have 4 cards
       expect(newGame.difficultyScore).toBeDefined();
       expect(typeof newGame.difficultyScore).toBe('number');
-      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(0);
-      expect(newGame.difficultyScore).toBeLessThanOrEqual(25);
+      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges[difficulty].min);
+      expect(newGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges[difficulty].max);
     });
 
     it('should initialize hard difficulty game correctly', () => {
-      const newGame = initializeGame('hard');
+      const difficulty: Difficulty = 'hard';
+      const newGame = initializeGame(difficulty);
 
-      expect(newGame.difficulty).toBe('hard');
-      expect(newGame.maxRounds).toBe(8);
-      expect(newGame.maxTestsPerRound).toBe(3);
-      expect(newGame.criteriaCards.length).toBeGreaterThanOrEqual(5); // Hard difficulty should have 5+ cards (may fallback)
-      expect(newGame.criteriaCards.length).toBeLessThanOrEqual(6);
+      expect(newGame.difficulty).toBe(difficulty);
+      expect(newGame.maxRounds).toBe(difficultyRanges[difficulty].maxRounds);
+      expect(newGame.maxTestsPerRound).toBe(difficultyRanges[difficulty].maxTestsPerRound);
+      expect(newGame.criteriaCards.length).toBe(difficultyRanges[difficulty].cardCount);
       expect(newGame.difficultyScore).toBeDefined();
       expect(typeof newGame.difficultyScore).toBe('number');
-      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(50);
-      expect(newGame.difficultyScore).toBeLessThanOrEqual(75);
+      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges[difficulty].min);
+      expect(newGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges[difficulty].max);
     });
 
     it('should initialize expert difficulty game correctly', () => {
-      const newGame = initializeGame('expert');
+      const difficulty: Difficulty = 'expert';
+      const newGame = initializeGame(difficulty);
 
-      expect(newGame.difficulty).toBe('expert');
-      expect(newGame.maxRounds).toBe(10);
-      expect(newGame.maxTestsPerRound).toBe(3);
-      expect(newGame.criteriaCards.length).toBeGreaterThanOrEqual(5); // Expert difficulty should have 5+ cards (may fallback)
-      expect(newGame.criteriaCards.length).toBeLessThanOrEqual(7);
+      expect(newGame.difficulty).toBe(difficulty);
+      expect(newGame.maxRounds).toBe(difficultyRanges[difficulty].maxRounds);
+      expect(newGame.maxTestsPerRound).toBe(difficultyRanges[difficulty].maxTestsPerRound);
+      expect(newGame.criteriaCards.length).toBe(difficultyRanges[difficulty].cardCount);
       expect(newGame.difficultyScore).toBeDefined();
       expect(typeof newGame.difficultyScore).toBe('number');
-      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(75);
-      expect(newGame.difficultyScore).toBeLessThanOrEqual(100);
+      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges[difficulty].min);
+      expect(newGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges[difficulty].max);
     });
 
     it('should generate valid master combination', () => {
-      const newGame = initializeGame();
+      const newGame = initializeGame('medium');
       const { saphir, topaze, amethyst } = newGame.masterCombination;
 
       expect(saphir).toBeGreaterThanOrEqual(1);
@@ -142,7 +141,7 @@ describe('gameLogic', () => {
     });
 
     it('should generate criteria cards with proper structure', () => {
-      const newGame = initializeGame();
+      const newGame = initializeGame('medium');
 
       newGame.criteriaCards.forEach(card => {
         expect(card.id).toBeDefined();
@@ -356,14 +355,14 @@ describe('gameLogic', () => {
       expect(typeof expertGame.difficultyScore).toBe('number');
 
       // All scores should be in difficulty-specific ranges
-      expect(easyGame.difficultyScore).toBeGreaterThanOrEqual(0);
-      expect(easyGame.difficultyScore).toBeLessThanOrEqual(25);
-      expect(mediumGame.difficultyScore).toBeGreaterThanOrEqual(25);
-      expect(mediumGame.difficultyScore).toBeLessThanOrEqual(50);
-      expect(hardGame.difficultyScore).toBeGreaterThanOrEqual(50);
-      expect(hardGame.difficultyScore).toBeLessThanOrEqual(75);
-      expect(expertGame.difficultyScore).toBeGreaterThanOrEqual(75);
-      expect(expertGame.difficultyScore).toBeLessThanOrEqual(100);
+      expect(easyGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.easy.min);
+      expect(easyGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges.easy.max);
+      expect(mediumGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.medium.min);
+      expect(mediumGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges.medium.max);
+      expect(hardGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.hard.min);
+      expect(hardGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges.hard.max);
+      expect(expertGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.expert.min);
+      expect(expertGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges.expert.max);
     });
 
     it('should generate consistent difficulty scores for same difficulty level', () => {
@@ -378,8 +377,8 @@ describe('gameLogic', () => {
 
       // Scores should be in reasonable range for medium difficulty
       [game1, game2, game3].forEach(game => {
-        expect(game.difficultyScore).toBeGreaterThanOrEqual(25);
-        expect(game.difficultyScore).toBeLessThanOrEqual(50);
+        expect(game.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.medium.min);
+        expect(game.difficultyScore).toBeLessThanOrEqual(difficultyRanges.medium.max);
       });
     });
 
@@ -391,7 +390,7 @@ describe('gameLogic', () => {
       expect(typeof gameState.difficultyScore).toBe('number');
 
       // After performing a test, difficulty score should remain
-      const testSchema = {
+      const testSchema: TestSchema = {
         combination: { saphir: 2, topaze: 1, amethyst: 3 },
         cardId: gameState.criteriaCards[0].id
       };

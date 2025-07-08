@@ -12,8 +12,10 @@ import { Cog, Settings } from 'lucide-react';
 import {CriteriaCardSimpleComponent} from "@/components/CriteriaCardSimple.tsx";
 import {SequenceDisplay} from "@/components/SequenceDisplay.tsx";
 
+const DEFAULT_DIFFICULTY = 'expert';
+
 export const TuringMachine: React.FC = () => {
-  const [gameState, setGameState] = useState<GameState>(() => initializeGame());
+  const [gameState, setGameState] = useState<GameState>(() => initializeGame(DEFAULT_DIFFICULTY));
   const [analyzingCardId, setAnalyzingCardId] = useState<string | null>(null);
   const [solutionMode, setSolutionMode] = useState(false);
   const [lightingEffect, setLightingEffect] = useState<LightingEffect>('default');
@@ -89,7 +91,7 @@ export const TuringMachine: React.FC = () => {
 
   const handleNewGame = () => {
     console.log(' STEAM HISS! New puzzle generating...');
-    setGameState(initializeGame());
+    setGameState(initializeGame(DEFAULT_DIFFICULTY));
     setAnalyzingCardId(null);
     setSolutionMode(false);
     setLightingEffect('default');

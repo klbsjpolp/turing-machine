@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="testDifficultyDistribution.ts" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="testDifficultyDistribution.ts" typescript-loader="bundled" working-dir="$PROJECT_DIR$/src/lib">
+    <method v="2" />
+  </configuration>
+</component>

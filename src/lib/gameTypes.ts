@@ -45,6 +45,7 @@ export interface GameState {
     result: TestResult;
   }>;
   impossibleNumbers: ImpossibleNumbers;
+  serialization: string; // Chaîne de sérialisation du puzzle
 }
 
 export interface TestSchema {
