@@ -1,7 +1,7 @@
 import React from 'react';
 import { GameState, CriteriaCard, Combination, TestResult } from '@/lib/gameTypes';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { SequenceDisplay } from './SequenceDisplay';
 import {formatRuleWithColors} from "@/lib/formatRules.tsx";
 
@@ -10,30 +10,33 @@ interface TestHistoryProps {
   criteriaCards: CriteriaCard[];
 }
 
+type NormalRound = {round: number, test: Combination, cards: {cardId: string, result: TestResult}[]};
+type FailedSolutionRound = {round: number, test: Combination};
+type Round = NormalRound | FailedSolutionRound;
+//type guard for NormalRound
+function isNormalRound(round: Round): round is NormalRound {
+  return 'cards' in round;
+}
+
 export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards }) => {
   // Regrouper les essais par round
-  type HistoryEntry = {
-    round: number;
-    test: Combination;
-    cardId: string;
-    result: TestResult;
-    cardResults?: Record<string, TestResult | boolean>;
-    cards?: Record<string, TestResult | boolean>;
-    combination?: Combination;
-    combinaison?: Combination;
-    sequence?: Combination;
-    input?: Combination;
-    try?: Combination;
-    values?: Combination;
-  };
-  const rounds = history.reduce((acc, entry) => {
-      let round = acc.find(r => r.round === entry.round);
-      if (!round) {
+  // Extract failed solutions from history
+  const failedSolutions = history.filter(entry => entry.cardId === 'failed_solution');
+
+  // Process regular test entries
+  const rounds = history
+    .reduce((acc, entry) => {
+      if (entry.cardId === 'failed_solution')
+          acc.push({round: entry.round + 0.5, test: entry.test} as FailedSolutionRound);
+      else {
+        let round = acc.filter(isNormalRound).find(r => r.round === entry.round);
+        if (!round) {
           acc.push(round = {round: entry.round, test: entry.test, cards: []});
+        }
+        round.cards.push({cardId: entry.cardId, result: entry.result});
       }
-      round.cards.push({cardId: entry.cardId, result: entry.result});
       return acc;
-  }, [] as {round: number, test: Combination, cards: {cardId: string, result: TestResult}[]}[])
+    }, [] as Round[])
       .sort((a, b) => a.round - b.round);
   // Liste des IDs de cartes dans l'ordre d'affichage
   const cardIds = criteriaCards.map(card => card.id);
@@ -52,6 +55,25 @@ export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards
           </div>
         ) : (
           <div className="test-history-grid-container">
+            {/* Failed Solutions Section */}
+            {failedSolutions.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold mb-2 text-red-800">Solutions incorrectes:</h3>
+                {failedSolutions.map((solution, index) => (
+                  <div key={`failed-${index}`} className="flex items-center p-2 mb-2 bg-red-50 border border-red-200 rounded">
+                    <AlertTriangle className="text-red-700 mr-2" size={18} />
+                    <span className="mr-2">Tentative échouée:</span>
+                    <SequenceDisplay 
+                      saphir={solution.test.saphir} 
+                      topaze={solution.test.topaze} 
+                      amethyst={solution.test.amethyst} 
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Regular Test History Grid */}
             <div className="test-history-grid" style={{ gridTemplateColumns: `min-content repeat(${cardIds.length}, 1fr)` }}>
               <div className="test-history-corner"></div>
               {cardIds.map(cardId => (
@@ -60,25 +82,37 @@ export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards
                 </div>
               ))}
               {rounds.map((round) => {
-                return (
-                  <React.Fragment key={round.round}>
-                    <div className="test-history-round-label">
-                      <SequenceDisplay saphir={round.test.saphir} topaze={round.test.topaze} amethyst={round.test.amethyst} />
-                    </div>
-                    {cardIds.map(cardId => {
-                      const result= round.cards.find(card => card.cardId === cardId)?.result;
-                      return (
-                        <div key={cardId} className="test-history-cell">
-                          {result === 'success' ? (
-                            <CheckCircle className="text-green-700" size={22} />
-                          ) : (result === 'failure') ? (
-                            <XCircle className="text-red-700" size={22} />
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                  </React.Fragment>
-                );
+                if (isNormalRound(round))
+                  return (
+                    <React.Fragment key={round.round}>
+                      <div className="test-history-round-label">
+                        <SequenceDisplay saphir={round.test.saphir} topaze={round.test.topaze} amethyst={round.test.amethyst} />
+                      </div>
+                      {cardIds.map(cardId => {
+                        const result= round.cards.find(card => card.cardId === cardId)?.result;
+                        return (
+                          <div key={cardId} className="test-history-cell">
+                            {result === 'success' ? (
+                              <CheckCircle className="text-green-700" size={22} />
+                            ) : (result === 'failure') ? (
+                              <XCircle className="text-red-700" size={22} />
+                            ) : null}
+                          </div>
+                        );
+                      })}
+                    </React.Fragment>
+                  );
+                else
+                  return (
+                    <React.Fragment key={round.round}>
+                      <div className="test-history-round-label failed-solution">
+                        <SequenceDisplay saphir={round.test.saphir} topaze={round.test.topaze} amethyst={round.test.amethyst} />
+                      </div>
+                      <div className="test-history-failed-solution-row">
+                        <span className="text-red-700">Solution incorrecte</span>
+                      </div>
+                    </React.Fragment>
+                  );
               })}
             </div>
           </div>

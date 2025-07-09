@@ -1,6 +1,6 @@
 import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
-import {Combination, CriteriaCard} from "./gameTypes";
+import {Combination, CriteriaCard, Digit} from "./gameTypes";
 import {AllPossibleCards} from './criteriaLogic';
 
 export function cn(...inputs: ClassValue[]) {

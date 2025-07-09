@@ -1,7 +1,7 @@
 import { serializePuzzle, deserializePuzzle } from '../utils';
 import { AllPossibleCards } from '../criteriaLogic';
 import {Combination, CriteriaCard, Digit} from '../gameTypes';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 function generateRandomDigit(): Digit {
   return Math.round(Math.random() * 5) as Digit;
@@ -12,17 +12,16 @@ function generateRandomCard() {
 }
 
 describe('Puzzle serialization/deserialization', () => {
-  it('should serialize and deserialize a puzzle correctly', () => {
-    // Exemple de solution et cartes (using fixed values for deterministic testing)
-    const solution: Combination = { saphir: 3, topaze: 2, amethyst: 5 };
-    const allCards = AllPossibleCards;
-    // On prend 5 cartes différentes (using fixed indices for deterministic testing)
+  it('should serialize and deserialize a random puzzle correctly', () => {
+    // Exemple de solution et cartes (using random values)
+    const solution: Combination = { saphir: generateRandomDigit(), topaze: generateRandomDigit(), amethyst: generateRandomDigit() };
+// On prend 5 cartes différentes (using random cards)
     const cards: CriteriaCard[] = [
-      { ...allCards[5], successRule: 'A', testResult: null },
-      { ...allCards[6], successRule: 'B', testResult: null },
-      { ...allCards[7], successRule: 'A', testResult: null },
-      { ...allCards[8], successRule: 'B', testResult: null },
-      { ...allCards[9], successRule: 'A', testResult: null },
+      { ...generateRandomCard(), successRule: 'A', testResult: null },
+      { ...generateRandomCard(), successRule: 'B', testResult: null },
+      { ...generateRandomCard(), successRule: 'A', testResult: null },
+      { ...generateRandomCard(), successRule: 'B', testResult: null },
+      { ...generateRandomCard(), successRule: 'A', testResult: null },
     ];
     const serialized = serializePuzzle(solution, cards);
     const deserialized = deserializePuzzle(serialized);

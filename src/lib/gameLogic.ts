@@ -83,8 +83,22 @@ export function submitSolution(gameState: GameState, solution: Combination): Gam
     };
   }
 
+  // Add the failed solution to the history
+  const newHistory = [
+    {
+      round: gameState.currentRound,
+      test: solution,
+      cardId: 'failed_solution', // Special ID to identify failed solutions
+      result: 'failure' as TestResult
+    },
+    ...gameState.testHistory
+  ];
+
   // Incorrect solution: penalize by advancing to the next round.
-  return nextRound(gameState);
+  return nextRound({
+    ...gameState,
+    testHistory: newHistory
+  });
 }
 
 export function nextRound(gameState: GameState): GameState {

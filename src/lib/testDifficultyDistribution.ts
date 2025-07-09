@@ -1,4 +1,4 @@
-import {calculatePuzzleComplexity, difficultyRanges, generateUniqueSolutionSet} from './criteriaLogic';
+import {difficultyRanges, generateUniqueSolutionSet} from './criteriaLogic';
 import {Difficulty} from "@/lib/gameTypes.ts";
 
 interface Distribution {
