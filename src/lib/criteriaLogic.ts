@@ -318,9 +318,11 @@ export const difficultyRanges = {
   expert: { min: 80, max: 100, maxRounds: 7, maxTestsPerRound: 3, cardCount: 5, maxAttempts: 10000, preferHighInfo: true, allowSimilarFamilies: false }
 };
 
-function isScoreInDifficultyRange(score: number, difficulty: Difficulty): boolean {
-  const range = difficultyRanges[difficulty];
-  return score >= range.min && score < range.max;
+export function getDifficultyForScore(score: number): Difficulty {
+  if (score < difficultyRanges.easy.max) return 'easy';
+  if (score < difficultyRanges.medium.max) return 'medium';
+  if (score < difficultyRanges.hard.max) return 'hard';
+  return 'expert';
 }
 
 /**
@@ -480,7 +482,7 @@ export function generatePuzzleWithDifficulty(difficulty: Difficulty): { cards: C
         // Calculate difficulty score and validate it's in the correct range
         const difficultyScore = calculatePuzzleComplexity(currentCards);
 
-        if (isScoreInDifficultyRange(difficultyScore, difficulty)) {
+        if (getDifficultyForScore(difficultyScore) === difficulty) {
           console.log(`Generated ${difficulty} puzzle in ${attempts} attempts with ${settings.cardCount} cards. Score: ${difficultyScore}`);
           return { cards: currentCards, solution: targetSolution, difficultyScore };
         } else {

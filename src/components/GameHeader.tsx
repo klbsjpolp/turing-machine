@@ -35,6 +35,29 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ gameState }) => {
 
       <div className="flex justify-center gap-4 flex-wrap">
         <div className="paper-panel p-3 relative">
+          <div className="flex items-center gap-3">
+            <Star size={28} className="text-amber-900/70" />
+            <div>
+              <div className="text-sm opacity-75 font-semibold">Code de casse-tête</div>
+              <div className="text-xl font-bold">
+                {gameState.serialization}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="paper-panel p-3 relative">
+          <div className="absolute bottom-0 right-0 w-full bg-steampunk-copper/30" style={{height: getFillHeight(gameState.difficultyScore, 100)}}></div>
+          <div className="flex items-center gap-3">
+            <Star size={28} className="text-amber-900/70" />
+            <div>
+              <div className="text-sm opacity-75 font-semibold">Difficulté</div>
+              <div className="text-xl font-bold">
+                {getDifficultyDisplay(gameState.difficulty)}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="paper-panel p-3 relative">
           <div className="absolute bottom-0 right-0 w-full bg-steampunk-copper/30" style={{height: getFillHeight(gameState.currentRound, gameState.maxRounds)}}></div>
           <div className="flex items-center gap-3">
             <Clock size={28} className="text-amber-900/70" />
@@ -55,18 +78,6 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ gameState }) => {
               <div className="text-sm opacity-75 font-semibold">Analyses</div>
               <div className="text-2xl font-bold">
                 {gameState.testsThisRound} / {gameState.maxTestsPerRound}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="paper-panel p-3 relative">
-          <div className="absolute bottom-0 right-0 w-full bg-steampunk-copper/30" style={{height: getFillHeight(gameState.difficultyScore, 100)}}></div>
-          <div className="flex items-center gap-3">
-            <Star size={28} className="text-amber-900/70" />
-            <div>
-              <div className="text-sm opacity-75 font-semibold">Difficulté</div>
-              <div className="text-xl font-bold">
-                {getDifficultyDisplay(gameState.difficulty)}
               </div>
             </div>
           </div>

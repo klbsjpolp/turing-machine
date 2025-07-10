@@ -63,29 +63,10 @@ layer(base);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-gear-rotate: gear-rotate 20s linear infinite;
   --animate-steam-rise: steam-rise 3s ease-out infinite;
   --animate-lever-pull: lever-pull 0.8s ease-in-out;
   --animate-button-press: button-press 0.2s ease-in-out;
-
-  @keyframes accordion-down {
-    from {
-      height: 0;
-    }
-    to {
-      height: var(--radix-accordion-content-height);
-    }
-  }
-  @keyframes accordion-up {
-    from {
-      height: var(--radix-accordion-content-height);
-    }
-    to {
-      height: 0;
-    }
-  }
   @keyframes gear-rotate {
     from {
       transform: rotate(0deg);

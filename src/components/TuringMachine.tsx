@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { GameState, Digit, Color } from '@/lib/gameTypes';
+import { GameState, Digit, Color, Difficulty } from '@/lib/gameTypes';
 import { initializeGame, performTest, nextRound, submitSolution, abandonGame, checkSolution } from '@/lib/gameLogic';
 import { ColorPanel } from './ColorPanel';
 import { CriteriaCardComponent } from './CriteriaCard';
@@ -11,14 +11,15 @@ import { LightingOverlay, LightingEffect } from './LightingOverlay';
 import { Cog, Settings } from 'lucide-react';
 import {CriteriaCardSimpleComponent} from "@/components/CriteriaCardSimple.tsx";
 import {SequenceDisplay} from "@/components/SequenceDisplay.tsx";
-
-const DEFAULT_DIFFICULTY = 'expert';
+import { NewGameDialog } from './NewGameDialog';
+import { initializeGameFromSerialization } from '@/lib/initializeGameFromSerialization';
 
 export const TuringMachine: React.FC = () => {
-  const [gameState, setGameState] = useState<GameState>(() => initializeGame(DEFAULT_DIFFICULTY));
+  const [gameState, setGameState] = useState<GameState | null>(null);
   const [analyzingCardId, setAnalyzingCardId] = useState<string | null>(null);
   const [solutionMode, setSolutionMode] = useState(false);
   const [lightingEffect, setLightingEffect] = useState<LightingEffect>('default');
+  const [newGameDialogOpen, setNewGameDialogOpen] = useState(true); // Open dialog by default
 
   const triggerLightingEffect = (effect: LightingEffect, duration: number | null = 1000) => {
     setLightingEffect(effect);
@@ -28,11 +29,11 @@ export const TuringMachine: React.FC = () => {
   };
 
   const handleDigitSelect = (color: Color, digit: Digit) => {
-    // Don't allow changing the combination if it's locked
-    if (gameState.combinationLocked) {
+    // Don't allow changing the combination if it's locked or if gameState is null
+    if (!gameState || gameState.combinationLocked) {
       return;
     }
-    
+
     setGameState(prev => ({
       ...prev,
       currentTest: {
@@ -43,7 +44,7 @@ export const TuringMachine: React.FC = () => {
   };
 
   const handleCardAnalyze = (cardId: string) => {
-    if (analyzingCardId || gameState.testsThisRound >= gameState.maxTestsPerRound) {
+    if (!gameState || analyzingCardId || gameState.testsThisRound >= gameState.maxTestsPerRound) {
       return;
     }
 
@@ -72,12 +73,16 @@ export const TuringMachine: React.FC = () => {
   };
 
   const handleNextRound = () => {
+    if (!gameState) return;
+
     console.log('🔄 CLICK! Round completed...');
     setGameState(nextRound(gameState));
     triggerLightingEffect('next_round', 1500);
   };
 
   const handleSubmitSolution = () => {
+    if (!gameState) return;
+
     console.log(' WHOOSH! Solution submitted...');
 
     if (!checkSolution(gameState, gameState.currentTest)) {
@@ -90,20 +95,37 @@ export const TuringMachine: React.FC = () => {
   };
 
   const handleNewGame = () => {
+    console.log(' STEAM HISS! Opening new game dialog...');
+    setNewGameDialogOpen(true);
+  };
+
+  const handleStartGame = (difficulty: Difficulty | null, serialization: string | null) => {
     console.log(' STEAM HISS! New puzzle generating...');
-    setGameState(initializeGame(DEFAULT_DIFFICULTY));
+
+    // Initialize game based on whether we have a serialization string or a difficulty
+    if (serialization) {
+      setGameState(initializeGameFromSerialization(serialization));
+    } else if (difficulty) {
+      setGameState(initializeGame(difficulty));
+    }
+
     setAnalyzingCardId(null);
     setSolutionMode(false);
     setLightingEffect('default');
+    setNewGameDialogOpen(false);
   };
 
   const handleAbandon = () => {
     console.log(' EMERGENCY STOP! Revealing solution...');
-    setGameState(abandonGame(gameState));
-    setLightingEffect('abandoned');
+    if (gameState) {
+      setGameState(abandonGame(gameState));
+      setLightingEffect('abandoned');
+    }
   };
 
   const handleToggleImpossible = (color: Color, digit: Digit) => {
+    if (!gameState) return;
+
     setGameState(prevState => {
       const newSet = new Set(prevState.impossibleNumbers[color]);
       if (newSet.has(digit)) {
@@ -121,20 +143,27 @@ export const TuringMachine: React.FC = () => {
   };
 
   useEffect(() => {
-    if (gameState.gameStatus === 'won') {
+    if (gameState?.gameStatus === 'won') {
       triggerLightingEffect('victory', 2500);
-    } else if (gameState.gameStatus === 'lost') {
+    } else if (gameState?.gameStatus === 'lost') {
       setLightingEffect('defeat');
     }
-  }, [gameState.gameStatus]);
+  }, [gameState?.gameStatus]);
 
-  const canNextRound = gameState.testsThisRound > 0 && gameState.gameStatus === 'playing';
+  const canNextRound = gameState?.testsThisRound > 0 && gameState?.gameStatus === 'playing';
 
   return (
     <div className="min-h-screen bg-linear-to-b from-steampunk-coal to-steampunk-dark-bronze relative overflow-hidden">
       <SteamBackground />
       <LightingOverlay effect={lightingEffect} />
-      
+
+      {/* New Game Dialog */}
+      <NewGameDialog 
+        open={newGameDialogOpen} 
+        onOpenChange={setNewGameDialogOpen}
+        onStartGame={handleStartGame}
+      />
+
       {/* Decorative gears */}
       <div className="absolute top-4 left-4 text-steampunk-bronze animate-gear-rotate">
         <Cog size={32} />
@@ -161,9 +190,13 @@ export const TuringMachine: React.FC = () => {
         <Cog className="gear absolute top-4 left-4" size={40} />
 
         <div className="container mx-auto px-4 py-6 relative z-10">
-          <GameHeader gameState={gameState} />
+          {gameState ? (
+            <>
+              <GameHeader gameState={gameState} />
+            </>
+          ) : null}
 
-          {gameState.gameStatus === 'playing' && (
+          {gameState?.gameStatus === 'playing' && (
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-8">
               {/* Left Panel - Controls */}
               <div className="xl:col-span-1 space-y-6">
@@ -171,7 +204,7 @@ export const TuringMachine: React.FC = () => {
                   <h2 className="paper-panel-title">
                     Console de commande
                   </h2>
-                  
+
                   {/* Color Panels */}
                   <div className="space-y-4">
                     <ColorPanel
@@ -252,7 +285,7 @@ export const TuringMachine: React.FC = () => {
           )}
 
           {/* Game Over States */}
-          {gameState.gameStatus !== 'playing' && (
+          {gameState?.gameStatus !== 'playing' && gameState && (
             <>
               {gameState.gameStatus === 'abandoned' || gameState.gameStatus === 'won' || gameState.gameStatus === 'lost' ? (
                 <div className="mt-8">
@@ -339,13 +372,13 @@ export const TuringMachine: React.FC = () => {
           )}
 
           {/* Solution Mode Modal */}
-          {solutionMode && (
+          {solutionMode && gameState && (
             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
               <div className="paper-panel max-w-md mx-4">
                 <h2 className="paper-panel-title">
                   Proposer la combinaison
                 </h2>
-                
+
                 <div className="space-y-4 mb-6">
                   <ColorPanel
                     color="saphir"

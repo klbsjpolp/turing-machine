@@ -1,5 +1,5 @@
 import { serializePuzzle, deserializePuzzle } from '../utils';
-import { AllPossibleCards } from '../criteriaLogic';
+import {AllPossibleCards, generatePuzzleWithDifficulty} from '../criteriaLogic';
 import {Combination, CriteriaCard, Digit} from '../gameTypes';
 import { describe, it, expect } from 'vitest';
 
@@ -66,4 +66,16 @@ describe('Puzzle serialization/deserialization', () => {
     ];
     expect(() => serializePuzzle(solution, cards)).toThrow();
   });
+
+  it('should serialize and deserialize a valid expert puzzle', () => {
+    const puzzle = generatePuzzleWithDifficulty('expert')
+    const serialized = serializePuzzle(puzzle.solution, puzzle.cards);
+    const deserialized = deserializePuzzle(serialized);
+    expect(deserialized.solution).toEqual(puzzle.solution);
+    // On ne compare que id et successRule pour les cartes
+    for (let i = 0; i < puzzle.cards.length; i++) {
+      expect(deserialized.cards[i].id).toBe(puzzle.cards[i].id);
+      expect(deserialized.cards[i].successRule).toBe(puzzle.cards[i].successRule);
+    }
+  })
 });
