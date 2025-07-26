@@ -1,7 +1,7 @@
 import React from 'react';
 import { GameState, CriteriaCard, Combination, TestResult } from '@/lib/gameTypes';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 import { SequenceDisplay } from './SequenceDisplay';
 import {formatRuleWithColors} from "@/lib/formatRules.tsx";
 
@@ -21,9 +21,8 @@ function isNormalRound(round: Round): round is NormalRound {
 export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards }) => {
   // Regrouper les essais par round
   // Extract failed solutions from history
-  const failedSolutions = history.filter(entry => entry.cardId === 'failed_solution');
-
-  // Process regular test entries
+  history.filter(entry => entry.cardId === 'failed_solution');
+// Process regular test entries
   const rounds = history
     .reduce((acc, entry) => {
       if (entry.cardId === 'failed_solution')
@@ -55,24 +54,6 @@ export const TestHistory: React.FC<TestHistoryProps> = ({ history, criteriaCards
           </div>
         ) : (
           <div className="test-history-grid-container">
-            {/* Failed Solutions Section */}
-            {failedSolutions.length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-sm font-semibold mb-2 text-red-800">Solutions incorrectes:</h3>
-                {failedSolutions.map((solution, index) => (
-                  <div key={`failed-${index}`} className="flex items-center p-2 mb-2 bg-red-50 border border-red-200 rounded">
-                    <AlertTriangle className="text-red-700 mr-2" size={18} />
-                    <span className="mr-2">Tentative échouée:</span>
-                    <SequenceDisplay 
-                      saphir={solution.test.saphir} 
-                      topaze={solution.test.topaze} 
-                      amethyst={solution.test.amethyst} 
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
             {/* Regular Test History Grid */}
             <div className="test-history-grid" style={{ gridTemplateColumns: `min-content repeat(${cardIds.length}, 1fr)` }}>
               <div className="test-history-corner"></div>

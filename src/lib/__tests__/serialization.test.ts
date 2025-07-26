@@ -4,7 +4,7 @@ import {Combination, CriteriaCard, Digit} from '../gameTypes';
 import { describe, it, expect } from 'vitest';
 
 function generateRandomDigit(): Digit {
-  return Math.round(Math.random() * 5) as Digit;
+  return (Math.floor(Math.random() * 5) + 1) as Digit;
 }
 
 function generateRandomCard() {

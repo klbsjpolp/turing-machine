@@ -8,92 +8,70 @@ Ce document décrit un format de sérialisation compact, lisible et copiable pou
 
 - **Format général** : Une chaîne alphanumérique (Base64 URL-safe) sans caractères spéciaux.
 - **Contenu sérialisé** :
-  - Solution (ex : combinaison de 3 chiffres de 1 à 5)
-  - 5 cartes critères (leur critère et leur type A/B)
+  - Solution (combinaison de 3 chiffres de 1 à 5)
+  - 5 cartes critères (leur identifiant et leur type A/B)
 
-### Détails d'encodage
+## Implémentation technique
 
-#### 1. Solution
-- La solution est une combinaison de 3 chiffres, chacun de 1 à 5 (ex : 2-4-1).
-- Chaque chiffre est encodé sur 3 bits (permet de coder 1 à 5, 0 et 6-7 inutilisés).
-- Total : 9 bits pour la solution.
+### Encodage binaire
+1. **Solution** : Chaque chiffre (1-5) est encodé sur 3 bits (valeur - 1, donc 0-4)
+   - Saphir : 3 bits
+   - Topaze : 3 bits
+   - Améthyste : 3 bits
+2. **Cartes** : Pour chaque carte (5 au total)
+   - Index de la carte dans AllPossibleCards : 7 bits (permet jusqu'à 128 cartes)
+   - Règle de succès (A/B) : 1 bit (0 pour A, 1 pour B)
 
-#### 2. Cartes critères
-- Il y a toujours 5 cartes.
-- Chaque carte a :
-  - Un critère (ex : "plus grand que 3", "pair", etc.), supposé numéroté de 0 à N-1 (N = nombre total de critères possibles, par exemple 16 → 4 bits).
-  - Un type : A (0) ou B (1), codé sur 1 bit.
-- Chaque carte = 4 bits (critère) + 1 bit (A/B) = 5 bits.
-- Total pour 5 cartes : 25 bits.
+### Obfuscation
+- Les données binaires sont obfusquées par un XOR avec la clé "BTMG" (en ASCII: 0x42, 0x54, 0x4D, 0x47)
+- Cette opération rend la lecture directe des valeurs impossible sans connaître la clé
 
-#### 3. Concaténation et encodage
-- On concatène les bits : solution (9) + cartes (25) = 34 bits.
-- On convertit en bytes, puis on encode en Base64 URL-safe.
+### Encodage final
+- Les données obfusquées sont converties en Base64 URL-safe
+- Les caractères '+' sont remplacés par '-'
+- Les caractères '/' sont remplacés par '_'
+- Les '=' de padding sont supprimés
 
-### Ordre d'encodage et de décodage
+## Exemples
 
-- **Ordre des bits** :
-  - Les 9 premiers bits (de poids fort) correspondent à la solution : d'abord le chiffre du saphir (3 bits), puis celui de la topaze (3 bits), puis celui de l'améthyste (3 bits).
-  - Les 25 bits suivants correspondent aux 5 cartes, dans l'ordre : pour chaque carte, 4 bits pour le critère (index dans la liste des critères), puis 1 bit pour le type (A=0, B=1).
-- **Décodage** :
-  - Toujours lire la solution en premier (bits de poids fort), puis les cartes dans l'ordre d'encodage.
+### Exemple 1: Puzzle simple
+- **Solution** : { saphir: 2, topaze: 4, amethyst: 1 }
+- **Cartes** :
+  1. A_parity_saphir (Règle A)
+  2. A_parity_topaze (Règle B)
+  3. A_parity_amethyst (Règle A)
+  4. B_compare_gt_saphir_topaze (Règle B)
+  5. C_sum_gt8 (Règle A)
+- **Chaîne sérialisée** : `blRF11r-TQ`
 
-## Exemple d'encodage
-
-Supposons :
-- Solution : 2-4-1
-- Cartes :
-  - Carte 1 : critère 3, type A
-  - Carte 2 : critère 7, type B
-  - Carte 3 : critère 12, type A
-  - Carte 4 : critère 0, type B
-  - Carte 5 : critère 5, type A
-
-**Étape 1 : Encodage**
-- Solution : 2 (010), 4 (100), 1 (001) → `010100001`
-- Cartes :
-  - 3 (0011), A (0) → `00110`
-  - 7 (0111), B (1) → `01111`
-  - 12 (1100), A (0) → `11000`
-  - 0 (0000), B (1) → `00001`
-  - 5 (0101), A (0) → `01010`
-- Cartes concaténées : `00110 01111 11000 00001 01010`
-
-**Étape 2 : Concaténation**
-- Tout concaténé : `0101000010011001111110000000101010` (34 bits)
-
-**Étape 3 : Encodage Base64**
-- On convertit en bytes, puis on encode en Base64 URL-safe.
-- Exemple fictif : `Uk9x2g` (la chaîne réelle dépend de l'implémentation)
-
-## Exemple complet
-
-| Solution | Cartes (critère, type)                              | Chaîne sérialisée |
-|----------|-----------------------------------------------------|-------------------|
-| 2-4-1    | (3,A), (7,B), (12,A), (0,B), (5,A)                 | Uk9x2g            |
-| 5-1-3    | (8,B), (2,A), (15,B), (4,A), (9,B)                 | Z1Jv8w            |
-
-## Décodage
-
-Pour décoder :
-1. Décoder la chaîne Base64 en bytes.
-2. Lire les 9 premiers bits pour la solution (3 chiffres de 3 bits).
-3. Lire les 25 bits suivants pour les 5 cartes (5 x [4 bits critère + 1 bit A/B]).
-4. Reconstituer la solution et les cartes.
+### Exemple 2: Puzzle expert
+- **Solution** : { saphir: 5, topaze: 3, amethyst: 1 }
+- **Cartes** :
+  1. C_all_unique (Règle A)
+  2. D_or_gt3_ST (Règle A)
+  3. B_largest_is_saphir (Règle A)
+  4. C_product_gt15 (Règle B)
+  5. D_at_least_one_1 (Règle A)
+- **Chaîne sérialisée** : `ymcNYn6dTQ`
 
 ## Sécurité/Obfuscation
 
-- L'utilisateur ne peut pas deviner la solution ou les cartes sans connaître la structure exacte du format.
-- L'ordre des bits et l'encodage Base64 rendent la lecture directe difficile.
+- L'utilisateur ne peut pas deviner la solution ou les cartes sans connaître:
+  - La structure exacte du format binaire
+  - La clé d'obfuscation XOR
+  - La correspondance entre indices et cartes
+- L'encodage rend la lecture directe impossible, même pour un développeur sans accès au code source
 
 ## Avantages
-- Format court, facile à copier/coller.
-- Non trivial à décoder sans la structure.
-- Peut être étendu pour plus de cartes ou d'options.
+- Format court, facile à copier/coller
+- Non trivial à décoder sans la structure
+- Peut être étendu pour plus de cartes ou d'options
+- Résistant aux tentatives de triche par inspection visuelle
 
-## Notes
-- Adapter le nombre de bits selon le nombre de critères possibles.
-- Utiliser l'encodage Base64 URL-safe pour éviter les caractères spéciaux.
+## Notes techniques
+- La taille totale des données binaires est de 49 bits (9 pour la solution + 8×5 pour les cartes)
+- Cela donne 7 octets (avec padding), qui produisent une chaîne Base64 d'environ 10 caractères
+- L'utilisation de l'encodage Base64 URL-safe évite les caractères spéciaux qui pourraient poser problème dans les URL
 
 ---
 
