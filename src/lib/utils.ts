@@ -12,8 +12,8 @@ export function serializePuzzle(
   solution: Combination,
   cards: CriteriaCard[]
 ): string {
-  if (cards.length !== 5) {
-    throw new Error("Serialization requires exactly 5 cards");
+  if (cards.length < 4 || cards.length > 8) {
+    throw new Error("Serialization supports 4-8 cards");
   }
 
   // Create a mapping of card IDs to their index in AllPossibleCards
@@ -33,6 +33,9 @@ export function serializePuzzle(
   // We need 3 bits per digit (values 1-5 need 3 bits)
   let binaryData = '';
 
+  // Add card count first (3 bits for values 4-8)
+  binaryData += (cards.length - 4).toString(2).padStart(3, '0');
+
   // Add solution digits (3 bits each)
   binaryData += (solution.saphir - 1).toString(2).padStart(3, '0');
   binaryData += (solution.topaze - 1).toString(2).padStart(3, '0');
@@ -41,7 +44,7 @@ export function serializePuzzle(
   // Add card indices and success rules
   for (const card of cards) {
     const cardIndex = cardIdToIndex.get(card.id)!;
-    // Card index (0-69) needs 7 bits
+    // Card index (0-77) needs 7 bits (updated for more cards)
     binaryData += cardIndex.toString(2).padStart(7, '0');
     // Success rule (A=0, B=1) needs 1 bit
     binaryData += card.successRule === 'A' ? '0' : '1';
@@ -97,10 +100,14 @@ export function deserializePuzzle(serialized: string): { solution: Combination, 
       binaryData += byte.toString(2).padStart(8, '0');
     }
 
-    // Extract solution (first 9 bits: 3 bits per digit)
-    const saphirBits = binaryData.substring(0, 3);
-    const topazeBits = binaryData.substring(3, 6);
-    const amethystBits = binaryData.substring(6, 9);
+    // Extract card count (first 3 bits)
+    const cardCountBits = binaryData.substring(0, 3);
+    const cardCount = parseInt(cardCountBits, 2) + 4; // 0-4 maps to 4-8 cards
+
+    // Extract solution (next 9 bits: 3 bits per digit)
+    const saphirBits = binaryData.substring(3, 6);
+    const topazeBits = binaryData.substring(6, 9);
+    const amethystBits = binaryData.substring(9, 12);
 
     const solution: Combination = {
       saphir: (parseInt(saphirBits, 2) + 1) as Digit,
@@ -110,8 +117,8 @@ export function deserializePuzzle(serialized: string): { solution: Combination, 
 
     // Extract card information (8 bits per card: 7 for index, 1 for rule)
     const cards: CriteriaCard[] = [];
-    for (let i = 0; i < 5; i++) {
-      const startPos = 9 + i * 8;
+    for (let i = 0; i < cardCount; i++) {
+      const startPos = 12 + i * 8; // Start after card count (3) + solution (9) = 12 bits
       const cardIndexBits = binaryData.substring(startPos, startPos + 7);
       const successRuleBit = binaryData.substring(startPos + 7, startPos + 8);
 

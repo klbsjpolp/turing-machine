@@ -312,16 +312,63 @@ function calculateCardInformationValue(card: CriteriaCard, remainingCombinations
  * Checks if a difficulty score is within the expected range for a given difficulty level
  */
 export const difficultyRanges = {
-  easy: { min: 0, max: 50, maxRounds: 7, maxTestsPerRound: 3, cardCount: 5, maxAttempts: 10000, preferHighInfo: false, allowSimilarFamilies: true },
-  medium: { min: 50, max: 65, maxRounds: 7, maxTestsPerRound: 3, cardCount: 5, maxAttempts: 10000, preferHighInfo: false, allowSimilarFamilies: false },
-  hard: { min: 65, max: 80, maxRounds: 7, maxTestsPerRound: 3, cardCount: 5, maxAttempts: 10000, preferHighInfo: true, allowSimilarFamilies: false },
-  expert: { min: 80, max: 100, maxRounds: 7, maxTestsPerRound: 3, cardCount: 5, maxAttempts: 10000, preferHighInfo: true, allowSimilarFamilies: false }
+  easy: { 
+    maxRounds: 6, 
+    maxTestsPerRound: 4, 
+    cardCount: { min: 4, max: 5 }, 
+    maxAttempts: 5000, 
+    allowedCategories: ['single'], 
+    requiredCategories: [], 
+    minCompositeCards: 0,
+    allowSimilarFamilies: true,
+    preferHighInfo: true,
+    allowLowInfo: false
+  },
+  medium: { 
+    maxRounds: 7, 
+    maxTestsPerRound: 3, 
+    cardCount: { min: 5, max: 6 }, 
+    maxAttempts: 5000, 
+    allowedCategories: ['single', 'comparison'], 
+    requiredCategories: [], 
+    minCompositeCards: 0,
+    allowSimilarFamilies: false,
+    preferHighInfo: false,
+    allowLowInfo: false
+  },
+  hard: { 
+    maxRounds: 7, 
+    maxTestsPerRound: 2, 
+    cardCount: { min: 6, max: 7 }, 
+    maxAttempts: 5000, 
+    allowedCategories: ['single', 'comparison', 'global', 'composite'], 
+    requiredCategories: ['single', 'comparison'], 
+    minCompositeCards: 0,
+    allowSimilarFamilies: false,
+    preferHighInfo: false,
+    allowLowInfo: true
+  },
+  expert: { 
+    maxRounds: 6, 
+    maxTestsPerRound: 2, 
+    cardCount: { min: 7, max: 8 }, 
+    maxAttempts: 5000, 
+    allowedCategories: ['single', 'comparison', 'global', 'composite'], 
+    requiredCategories: ['single', 'comparison', 'global'], 
+    minCompositeCards: 2,
+    allowSimilarFamilies: false,
+    preferHighInfo: false,
+    allowLowInfo: true
+  }
 };
 
+// Note: Difficulty is now determined by constraint-based generation, not scoring
+// This function is kept for backward compatibility but should not be used in new system
 export function getDifficultyForScore(score: number): Difficulty {
-  if (score < difficultyRanges.easy.max) return 'easy';
-  if (score < difficultyRanges.medium.max) return 'medium';
-  if (score < difficultyRanges.hard.max) return 'hard';
+  // Legacy function - new system uses constraint-based difficulty
+  if (score < 50) return 'easy';
+  if (score < 65) return 'medium';
+  if (score < 80) return 'hard';
   return 'expert';
 }
 
@@ -413,11 +460,10 @@ export function calculatePuzzleComplexity(cards: CriteriaCard[]): number {
 }
 
 /**
- * Generates a puzzle with specified difficulty level
+ * Generates a puzzle with specified difficulty level using constraint-based approach
  */
 export function generatePuzzleWithDifficulty(difficulty: Difficulty): { cards: CriteriaCard[]; solution: Combination; difficultyScore: number } {
   const allCombinations = AllCombinations;
-
   const settings = difficultyRanges[difficulty];
   let attempts = 0;
 
@@ -425,14 +471,65 @@ export function generatePuzzleWithDifficulty(difficulty: Difficulty): { cards: C
     attempts++;
     const targetSolution = allCombinations[Math.floor(Math.random() * allCombinations.length)];
 
+    // Determine target card count within the range
+    const targetCardCount = Math.floor(Math.random() * (settings.cardCount.max - settings.cardCount.min + 1)) + settings.cardCount.min;
+
     const currentCards: CriteriaCard[] = [];
     const usedCardFamilies = new Set<string>();
+    const categoryCounts = new Map<string, number>();
     let remainingCombinations = [...allCombinations];
 
-    const shuffledPossibleCards = [...AllPossibleCards].sort(() => Math.random() - 0.5);
+    // Filter cards by allowed categories
+    const allowedCards = AllPossibleCards.filter(card => settings.allowedCategories.includes(card.category));
+    const shuffledPossibleCards = [...allowedCards].sort(() => Math.random() - 0.5);
 
+    // First, ensure we meet required category constraints
+    const requiredCategoryCards: CriteriaCard[] = [];
+    for (const requiredCategory of settings.requiredCategories) {
+      const categoryCards = shuffledPossibleCards.filter(card => 
+        card.category === requiredCategory && 
+        (!usedCardFamilies.has(card.family) || settings.allowSimilarFamilies)
+      );
+      
+      if (categoryCards.length > 0) {
+        const selectedCard = categoryCards[Math.floor(Math.random() * categoryCards.length)];
+        const rule = Math.random() > 0.5 ? 'A' : 'B';
+        const potentialCard: CriteriaCard = { ...selectedCard, successRule: rule, testResult: null };
+
+        // Ensure the card is valid for the target solution
+        if (!validateCriteria(targetSolution, potentialCard)) {
+          potentialCard.successRule = rule === 'A' ? 'B' : 'A';
+          if (validateCriteria(targetSolution, potentialCard)) {
+            requiredCategoryCards.push(potentialCard);
+            if (!settings.allowSimilarFamilies) {
+              usedCardFamilies.add(selectedCard.family);
+            }
+            categoryCounts.set(requiredCategory, (categoryCounts.get(requiredCategory) || 0) + 1);
+          }
+        } else {
+          requiredCategoryCards.push(potentialCard);
+          if (!settings.allowSimilarFamilies) {
+            usedCardFamilies.add(selectedCard.family);
+          }
+          categoryCounts.set(requiredCategory, (categoryCounts.get(requiredCategory) || 0) + 1);
+        }
+      }
+    }
+
+    // Add required category cards to current cards
+    currentCards.push(...requiredCategoryCards);
+    
+    // Update remaining combinations based on required cards
+    for (const card of requiredCategoryCards) {
+      remainingCombinations = remainingCombinations.filter(combo => validateCriteria(combo, card));
+    }
+
+    // Fill remaining slots with appropriate cards
     for (const cardDef of shuffledPossibleCards) {
-      if (currentCards.length >= settings.cardCount) break;
+      if (currentCards.length >= targetCardCount) break;
+
+      // Skip if we already used this card
+      if (requiredCategoryCards.some(rc => rc.id === cardDef.id)) continue;
 
       const family = cardDef.family;
       if (!settings.allowSimilarFamilies && usedCardFamilies.has(family)) {
@@ -456,44 +553,47 @@ export function generatePuzzleWithDifficulty(difficulty: Difficulty): { cards: C
         continue;
       }
 
-      // For harder difficulties, prefer cards with better information value
-      if (settings.preferHighInfo && currentCards.length > 2) {
-        const infoValue = calculateCardInformationValue(potentialCard, remainingCombinations);
-        // Skip cards with very low information value (< 0.05) for hard/expert, but be less strict
-        if (infoValue < 0.05 && Math.random() > 0.3) {
-          continue;
-        }
+      // Apply information value constraints based on difficulty
+      const infoValue = calculateCardInformationValue(potentialCard, remainingCombinations);
+      if (settings.preferHighInfo && infoValue < 0.1) {
+        continue; // Skip low-info cards for easy difficulty
+      }
+      if (!settings.allowLowInfo && infoValue < 0.05) {
+        continue; // Skip very low-info cards for medium difficulty
       }
 
       currentCards.push(potentialCard);
       if (!settings.allowSimilarFamilies) {
         usedCardFamilies.add(family);
       }
+      categoryCounts.set(cardDef.category, (categoryCounts.get(cardDef.category) || 0) + 1);
       remainingCombinations = nextRemaining;
     }
 
-    // Check for unique solution
-    if (currentCards.length === settings.cardCount && remainingCombinations.length === 1) {
-      if (
-        remainingCombinations[0].saphir === targetSolution.saphir &&
-        remainingCombinations[0].topaze === targetSolution.topaze &&
-        remainingCombinations[0].amethyst === targetSolution.amethyst
-      ) {
-        // Calculate difficulty score and validate it's in the correct range
-        const difficultyScore = calculatePuzzleComplexity(currentCards);
+    // Validate constraints are met
+    const compositeCount = categoryCounts.get('composite') || 0;
+    const hasRequiredCategories = settings.requiredCategories.every(cat => categoryCounts.has(cat));
+    const hasMinCompositeCards = compositeCount >= settings.minCompositeCards;
 
-        if (getDifficultyForScore(difficultyScore) === difficulty) {
-          console.log(`Generated ${difficulty} puzzle in ${attempts} attempts with ${settings.cardCount} cards. Score: ${difficultyScore}`);
-          return { cards: currentCards, solution: targetSolution, difficultyScore };
-        } else {
-          console.log(`Generated puzzle with score ${difficultyScore} doesn't match ${difficulty} difficulty range. Retrying...`);
-           // Try again with a different puzzle
-        }
+    // Check for unique solution and constraint satisfaction
+    if (currentCards.length >= settings.cardCount.min && 
+        currentCards.length <= settings.cardCount.max &&
+        remainingCombinations.length === 1 &&
+        hasRequiredCategories &&
+        hasMinCompositeCards) {
+      
+      if (remainingCombinations[0].saphir === targetSolution.saphir &&
+          remainingCombinations[0].topaze === targetSolution.topaze &&
+          remainingCombinations[0].amethyst === targetSolution.amethyst) {
+        
+        const difficultyScore = calculatePuzzleComplexity(currentCards);
+        console.log(`Generated ${difficulty} puzzle in ${attempts} attempts with ${currentCards.length} cards. Categories: ${Array.from(categoryCounts.keys()).join(', ')}`);
+        return { cards: currentCards, solution: targetSolution, difficultyScore };
       }
     }
   }
 
-  console.warn(`Failed to generate ${difficulty} puzzle with ${settings.cardCount} cards. Fallback to medium.`);
+  console.warn(`Failed to generate ${difficulty} puzzle. Fallback to medium.`);
 
   // Final fallback to medium difficulty
   if (difficulty !== 'medium') {
