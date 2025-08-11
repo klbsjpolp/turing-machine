@@ -12,16 +12,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Set pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          cache: 'pnpm'
       - name: Run linter
         run: pnpm lint
       - name: Run tests
