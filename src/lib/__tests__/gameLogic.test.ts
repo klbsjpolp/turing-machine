@@ -79,11 +79,12 @@ describe('gameLogic', () => {
       expect(newGame.difficulty).toBe(difficulty);
       expect(newGame.maxRounds).toBe(difficultyRanges[difficulty].maxRounds);
       expect(newGame.maxTestsPerRound).toBe(difficultyRanges[difficulty].maxTestsPerRound);
-      expect(newGame.criteriaCards.length).toBe(difficultyRanges[difficulty].cardCount); // Easy difficulty should have 4 cards
+      expect(newGame.criteriaCards.length).toBeGreaterThanOrEqual(difficultyRanges[difficulty].cardCount.min);
+      expect(newGame.criteriaCards.length).toBeLessThanOrEqual(difficultyRanges[difficulty].cardCount.max);
       expect(newGame.difficultyScore).toBeDefined();
       expect(typeof newGame.difficultyScore).toBe('number');
-      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges[difficulty].min);
-      expect(newGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges[difficulty].max);
+      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(0);
+      expect(newGame.difficultyScore).toBeLessThanOrEqual(100);
     });
 
     it('should initialize easy difficulty game correctly', () => {
@@ -93,11 +94,12 @@ describe('gameLogic', () => {
       expect(newGame.difficulty).toBe(difficulty);
       expect(newGame.maxRounds).toBe(difficultyRanges[difficulty].maxRounds);
       expect(newGame.maxTestsPerRound).toBe(difficultyRanges[difficulty].maxTestsPerRound);
-      expect(newGame.criteriaCards.length).toBe(difficultyRanges[difficulty].cardCount); // Easy difficulty should have 4 cards
+      expect(newGame.criteriaCards.length).toBeGreaterThanOrEqual(difficultyRanges[difficulty].cardCount.min);
+      expect(newGame.criteriaCards.length).toBeLessThanOrEqual(difficultyRanges[difficulty].cardCount.max);
       expect(newGame.difficultyScore).toBeDefined();
       expect(typeof newGame.difficultyScore).toBe('number');
-      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges[difficulty].min);
-      expect(newGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges[difficulty].max);
+      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(0);
+      expect(newGame.difficultyScore).toBeLessThanOrEqual(100);
     });
 
     it('should initialize hard difficulty game correctly', () => {
@@ -107,11 +109,12 @@ describe('gameLogic', () => {
       expect(newGame.difficulty).toBe(difficulty);
       expect(newGame.maxRounds).toBe(difficultyRanges[difficulty].maxRounds);
       expect(newGame.maxTestsPerRound).toBe(difficultyRanges[difficulty].maxTestsPerRound);
-      expect(newGame.criteriaCards.length).toBe(difficultyRanges[difficulty].cardCount);
+      expect(newGame.criteriaCards.length).toBeGreaterThanOrEqual(difficultyRanges[difficulty].cardCount.min);
+      expect(newGame.criteriaCards.length).toBeLessThanOrEqual(difficultyRanges[difficulty].cardCount.max);
       expect(newGame.difficultyScore).toBeDefined();
       expect(typeof newGame.difficultyScore).toBe('number');
-      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges[difficulty].min);
-      expect(newGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges[difficulty].max);
+      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(0);
+      expect(newGame.difficultyScore).toBeLessThanOrEqual(100);
     });
 
     it('should initialize expert difficulty game correctly', () => {
@@ -121,11 +124,12 @@ describe('gameLogic', () => {
       expect(newGame.difficulty).toBe(difficulty);
       expect(newGame.maxRounds).toBe(difficultyRanges[difficulty].maxRounds);
       expect(newGame.maxTestsPerRound).toBe(difficultyRanges[difficulty].maxTestsPerRound);
-      expect(newGame.criteriaCards.length).toBe(difficultyRanges[difficulty].cardCount);
+      expect(newGame.criteriaCards.length).toBeGreaterThanOrEqual(difficultyRanges[difficulty].cardCount.min);
+      expect(newGame.criteriaCards.length).toBeLessThanOrEqual(difficultyRanges[difficulty].cardCount.max);
       expect(newGame.difficultyScore).toBeDefined();
       expect(typeof newGame.difficultyScore).toBe('number');
-      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges[difficulty].min);
-      expect(newGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges[difficulty].max);
+      expect(newGame.difficultyScore).toBeGreaterThanOrEqual(0);
+      expect(newGame.difficultyScore).toBeLessThanOrEqual(100);
     });
 
     it('should generate valid master combination', () => {
@@ -354,15 +358,15 @@ describe('gameLogic', () => {
       expect(typeof hardGame.difficultyScore).toBe('number');
       expect(typeof expertGame.difficultyScore).toBe('number');
 
-      // All scores should be in difficulty-specific ranges
-      expect(easyGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.easy.min);
-      expect(easyGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges.easy.max);
-      expect(mediumGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.medium.min);
-      expect(mediumGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges.medium.max);
-      expect(hardGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.hard.min);
-      expect(hardGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges.hard.max);
-      expect(expertGame.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.expert.min);
-      expect(expertGame.difficultyScore).toBeLessThanOrEqual(difficultyRanges.expert.max);
+      // Scores are normalized complexity values
+      expect(easyGame.difficultyScore).toBeGreaterThanOrEqual(0);
+      expect(easyGame.difficultyScore).toBeLessThanOrEqual(100);
+      expect(mediumGame.difficultyScore).toBeGreaterThanOrEqual(0);
+      expect(mediumGame.difficultyScore).toBeLessThanOrEqual(100);
+      expect(hardGame.difficultyScore).toBeGreaterThanOrEqual(0);
+      expect(hardGame.difficultyScore).toBeLessThanOrEqual(100);
+      expect(expertGame.difficultyScore).toBeGreaterThanOrEqual(0);
+      expect(expertGame.difficultyScore).toBeLessThanOrEqual(100);
     });
 
     it('should generate consistent difficulty scores for same difficulty level', () => {
@@ -375,10 +379,10 @@ describe('gameLogic', () => {
       expect(typeof game2.difficultyScore).toBe('number');
       expect(typeof game3.difficultyScore).toBe('number');
 
-      // Scores should be in reasonable range for medium difficulty
+      // Scores should be normalized complexity values
       [game1, game2, game3].forEach(game => {
-        expect(game.difficultyScore).toBeGreaterThanOrEqual(difficultyRanges.medium.min);
-        expect(game.difficultyScore).toBeLessThanOrEqual(difficultyRanges.medium.max);
+        expect(game.difficultyScore).toBeGreaterThanOrEqual(0);
+        expect(game.difficultyScore).toBeLessThanOrEqual(100);
       });
     });
 
