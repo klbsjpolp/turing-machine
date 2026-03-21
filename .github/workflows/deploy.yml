@@ -1,6 +1,9 @@
 # Build and Deploy Vite React App to GitHub Pages
 name: Deploy Vite App to Pages
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   # Runs on pushes targeting the default branch
   push:
