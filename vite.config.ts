@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import tailwindcss from '@tailwindcss/vite'
+import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 /// <reference types="vitest" />
 
@@ -18,6 +19,38 @@ export default defineConfig(() => ({
   plugins: [
     react(),
     tailwindcss(),
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.svg", "robots.txt", "game-image.svg"],
+      manifest: {
+        name: "Automate de Deduction",
+        short_name: "Automate",
+        description: "Jeu de deduction steampunk inspire de Turing Machine",
+        theme_color: "#4a2f1a",
+        background_color: "#f5ede1",
+        display: "standalone",
+        start_url: process.env.NODE_ENV === "production" ? "/turing-machine/" : "/",
+        scope: process.env.NODE_ENV === "production" ? "/turing-machine/" : "/",
+        icons: [
+          {
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+    }),
   ],
 
   resolve: {
