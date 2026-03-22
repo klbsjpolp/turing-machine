@@ -21,10 +21,17 @@ export default defineConfig(() => ({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "robots.txt", "game-image.svg"],
+      includeAssets: [
+        "favicon.svg",
+        "robots.txt",
+        "game-image.svg",
+        "icon-192.png",
+        "icon-512.png",
+        "icon-512-maskable.png",
+      ],
       manifest: {
-        name: "Automate de Deduction",
-        short_name: "Automate",
+        name: "Turing Machine",
+        short_name: "Turing Machine",
         description: "Jeu de deduction steampunk inspire de Turing Machine",
         theme_color: "#4a2f1a",
         background_color: "#f5ede1",
@@ -33,17 +40,17 @@ export default defineConfig(() => ({
         scope: process.env.NODE_ENV === "production" ? "/turing-machine/" : "/",
         icons: [
           {
-            src: "pwa-192x192.png",
+            src: "icon-192.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "pwa-512x512.png",
+            src: "icon-512.png",
             sizes: "512x512",
             type: "image/png",
           },
           {
-            src: "pwa-512x512.png",
+            src: "icon-512-maskable.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
